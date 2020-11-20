@@ -72,7 +72,7 @@ const Card = ({
           <div className='card-header'>Order: {product.order}</div>
           <div className='card-body'>
             <ShowImage item={product} url='product' />
-            <h5 className="text-muted my-3">ผู้รับผิดชอบ: {user.name}</h5>
+            <h5 className="text-muted my-3">ผู้รับผิดชอบ: {product.name}</h5>
             <p>สถานที่: {product.place}</p>
             <p>{product.description}</p>
             <div>

@@ -4,8 +4,11 @@ import {isAuthenticated} from '../auth'
 import {Link} from 'react-router-dom'
 import {createProduct, getCategories} from './apiAdmin'
 
+const {user, token} = isAuthenticated()
+
 const AddProduct = () => {
   const [values, setValues] = useState({
+    name:user.name,
     order: '',
     description: '',
     place: '',
@@ -19,8 +22,8 @@ const AddProduct = () => {
     formData: ''
   })
 
-  const {user, token} = isAuthenticated()
   const {
+    name,
     order,
     description,
     place,
@@ -56,6 +59,7 @@ const AddProduct = () => {
 
   const clickSubmit = (event) => {
     event.preventDefault()
+    formData.set('name', user.name)
     setValues({...values, error: '', loading: true})
 
     createProduct(user._id, token, formData)
@@ -65,6 +69,7 @@ const AddProduct = () => {
       } else {
         setValues({
           ...values,
+          name: data.name,
           photo: '',
           order: '',
           description: '',
@@ -85,6 +90,11 @@ const AddProduct = () => {
         <label className='btn btn-secondary'>
           <input onChange={handleChange('photo')} type="file" name="photo" accept='image/*'/>
         </label>
+      </div>
+
+      <div className='form-group'>
+        <label className='text-muted'>Name</label>
+        <input onChange={handleChange('name')} type="text" className='form-control' value={name} disabled />
       </div>
 
       <div className='form-group'>

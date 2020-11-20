@@ -6,6 +6,7 @@ import {getProduct, getCategories, updateProduct} from './apiAdmin'
 
 const UpdateProduct = ({match}) => {
   const [values, setValues] = useState({
+    name:'',
     order: '',
     description: '',
     place: '',
@@ -21,6 +22,7 @@ const UpdateProduct = ({match}) => {
 
   const {user, token} = isAuthenticated()
   const {
+    name,
     order,
     description,
     place,
@@ -42,6 +44,7 @@ const UpdateProduct = ({match}) => {
         //populate the state
         setValues({
           ...values,
+          name: data.name,
           order: data.order,
           place: data.place,
           description: data.description,
@@ -105,6 +108,11 @@ const UpdateProduct = ({match}) => {
         <label className='btn btn-secondary'>
           <input onChange={handleChange('photo')} type="file" name="photo" accept='image/*'/>
         </label>
+      </div>
+
+      <div className='form-group'>
+        <label className='text-muted'>Name</label>
+        <input onChange={handleChange('name')} type="text" className='form-control' value={name} disabled />
       </div>
 
       <div className='form-group'>
