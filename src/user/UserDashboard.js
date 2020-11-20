@@ -36,10 +36,10 @@ const Dashboard = () => {
   return (
     <Layout title="Dashboard" description={`G'day ${name}`} className="container-fluid" >
       <div className='row'>
-        <div className='col-3'>
+        <div className='col-md-3'>
           {userLinks()}
         </div>
-        <div className='col-9'>
+        <div className='col-md-9'>
           {userInfo()}
         </div>
       </div>

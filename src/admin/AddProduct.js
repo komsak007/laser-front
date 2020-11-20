@@ -59,7 +59,8 @@ const AddProduct = () => {
 
   const clickSubmit = (event) => {
     event.preventDefault()
-    formData.set('name', user.name)
+    console.log(localStorage.getItem('jwt').user);
+    formData.set('name', localStorage.getItem('jwt'))
     setValues({...values, error: '', loading: true})
 
     createProduct(user._id, token, formData)
