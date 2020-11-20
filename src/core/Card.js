@@ -68,27 +68,29 @@ const Card = ({
 
 
     return (
-        <div className='card'>
-          <div className='card-header'>Order: {product.order}</div>
-          <div className='card-body'>
-            <ShowImage item={product} url='product' />
-            <h5 className="text-muted my-3">ผู้รับผิดชอบ: {product.name}</h5>
-            <p>สถานที่: {product.place}</p>
-            <p>{product.description}</p>
-            <div>
-              <span className='black-9'>วันที: {parseInt(product.createdAt.substring(8, 10))}-
-                {product.createdAt.substring(5, 7)}-
-                {product.createdAt.substring(0, 4)}
-              </span>
+        <div className='card-desk'>
+          <div className='card mb-3'>
+            <div className='card-header'>Order: {product.order}</div>
+            <div className='card-body'>
+              <ShowImage item={product} url='product' />
+              <h5 className="text-muted my-3">ผู้รับผิดชอบ: {product.name.substring(0, 6)}</h5>
+              <p>สถานที่: {product.place}</p>
+              <p>{product.description}</p>
+              <div>
+                <span className='black-9'>วันที: {parseInt(product.createdAt.substring(8, 10))}-
+                  {product.createdAt.substring(5, 7)}-
+                  {product.createdAt.substring(0, 4)}
+                </span>
+              </div>
+
+                {showViewButton(showViewProductButton)}
+
+                {showEdit(showEditButton)}
+
+                {showRemoveButton(showRemoveProductButton)}
+
+                {redirectUser()}
             </div>
-
-              {showViewButton(showViewProductButton)}
-
-              {showEdit(showEditButton)}
-
-              {showRemoveButton(showRemoveProductButton)}
-
-              {redirectUser()}
           </div>
         </div>
     )
