@@ -294,6 +294,7 @@ const PointsLaser = () => {
       setStageScale(stageScale,newScale)
       setStageX(stageX,-(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale)
       setStageX(stageX,-(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale)
+      // onWheel={handleWheel}
   };
 
   return (
@@ -302,7 +303,6 @@ const PointsLaser = () => {
       <Stage
         width={window.innerWidth}
         height={window.innerHeight}
-        onWheel={handleWheel}
         offsetX = {-size.width/2}
         offsetY = {-size.height/2}
         scaleX={stageScale}
