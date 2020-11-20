@@ -76,7 +76,7 @@ const Card = ({
             <p>สถานที่: {product.place}</p>
             <p>{product.description}</p>
             <div>
-              <span className='black-9'>วันที: {parseInt(product.createdAt.substring(8, 10))+1}-
+              <span className='black-9'>วันที: {parseInt(product.createdAt.substring(8, 10))}-
                 {product.createdAt.substring(5, 7)}-
                 {product.createdAt.substring(0, 4)}
               </span>
