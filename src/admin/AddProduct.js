@@ -49,6 +49,7 @@ const AddProduct = () => {
 
   useEffect(() => {
     init()
+    setValues({...values, name: user.name})
   }, [])
 
   const handleChange = name => event => {

@@ -20,7 +20,6 @@ const Signin = () => {
   }
 
   const clickSubmit = (event) => {
-    event.preventDefault()
     setValues({ ...values, error: false, loading: true });
     signin({email, password})
     .then(data => {
@@ -70,9 +69,9 @@ const Signin = () => {
   const redirectUser = () => {
     if(redirectToReferrer) {
       if(user && user.role === 1) {
-        return <Redirect to='/admin/dashboard' />
+        return <Redirect to='/' />
       } else {
-        return <Redirect to='/user/dashboard' />
+        return <Redirect to='/' />
       }
     }
     if(isAuthenticated()) {
