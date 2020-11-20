@@ -35,15 +35,15 @@ const PointsLaser = () => {
       .then(response => {setPoints(response.data.point)})
   },2000)
 
-      const checkSize = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
+    //   const checkSize = () => {
+    //   setSize({
+    //     width: window.innerWidth,
+    //     height: window.innerHeight
+    //   });
+    // };
 
-    window.addEventListener("resize", checkSize);
-    return () => window.removeEventListener("resize", checkSize)
+    // window.addEventListener("resize", checkSize);
+    // return () => window.removeEventListener("resize", checkSize)
     }, []);
 
 
