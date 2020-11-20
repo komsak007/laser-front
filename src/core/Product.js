@@ -34,7 +34,7 @@ const Product = (props) => {
   return (
     <Layout
       title={`Order: ${product && product.order}`}
-      description={product && product.description && product.description.substring(0, 100)}
+      description={`สถานที่: ${product && product.place && product.place.substring(0, 100)}`}
       className='container-fluid'
     >
       <div className='row'>
