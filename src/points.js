@@ -27,7 +27,7 @@ const PointsLaser = () => {
                                   height: window.innerHeight})
 
   const getMousePos = stage => {
-    return [((stage.getPointerPosition().x)-((window.innerWidth*2)/2)), ((stage.getPointerPosition().y)-((window.innerHeight*2)/2))];
+    return [((stage.getPointerPosition().x)-((window.innerWidth*1.3)/2)), ((stage.getPointerPosition().y)-((window.innerHeight*1.3)/2))];
   };
 
   useEffect(() => {setInterval(() =>{
@@ -35,17 +35,17 @@ const PointsLaser = () => {
       .then(response => {
         setPoints(response.data.point)
       })
+    //   const checkSize = () => {
+    //   setSize({
+    //     width: window.innerWidth,
+    //     height: window.innerHeight
+    //   });
+    // };
+    //
+    // window.addEventListener("resize", checkSize);
+    // return () => window.removeEventListener("resize", checkSize)
   },2000)
 
-      const checkSize = () => {
-      setSize({
-        width: window.innerWidth,
-        height: window.innerHeight
-      });
-    };
-
-    window.addEventListener("resize", checkSize);
-    return () => window.removeEventListener("resize", checkSize)
     }, []);
 
 
@@ -303,10 +303,11 @@ const PointsLaser = () => {
     <>
       <Menu />
         <Stage
-          width={window.innerWidth*1.5}
-          height={window.innerHeight*2}
-          offsetX = {(-size.width*1.5)/2}
-          offsetY = {(-size.height*2)/2}
+          width={2000}
+          height={1500}
+          onWheel={handleWheel}
+          offsetX = {(-2000)/2}
+          offsetY = {(-1500)/2}
           scaleX={stageScale}
           scaleY={stageScale}
           x={stageX}
@@ -315,10 +316,9 @@ const PointsLaser = () => {
           onMouseMove={handleMouseMove}
         >
           <Layer
-            width={window.innerWidth*2}
-            height={window.innerHeigh*2}
-            scaleX={stageScale}
-            scaleY={stageScale}
+            width={2000}
+            height={1500}
+
           >
           {points.length >= 2 && textLabel(points)}
 
