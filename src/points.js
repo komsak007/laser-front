@@ -27,7 +27,7 @@ const PointsLaser = () => {
                                   height: window.innerHeight})
 
   const getMousePos = stage => {
-    return [((stage.getPointerPosition().x)-((window.innerWidth*1.5)/2)), ((stage.getPointerPosition().y)-((window.innerHeight*1.5)/2))];
+    return [((stage.getPointerPosition().x)-((window.innerWidth*2)/2)), ((stage.getPointerPosition().y)-((window.innerHeight*2)/2))];
   };
 
   useEffect(() => {setInterval(() =>{
@@ -302,70 +302,66 @@ const PointsLaser = () => {
   return (
     <>
       <Menu />
-      <Stage
-        width={window.innerWidth*1.5}
-        height={window.innerHeight*1.5}
-        offsetX = {(-size.width*1.5)/2}
-        offsetY = {(-size.height*1.5)/2}
-        scaleX={stageScale}
-        scaleY={stageScale}
-        x={stageX}
-        y={stageY}
-        onMouseDown={handleClick}
-        onMouseMove={handleMouseMove}
-
-      >
-        <Layer
+        <Stage
           width={window.innerWidth*1.5}
-          height={window.innerHeigh*1.5}
+          height={window.innerHeight*2}
+          offsetX = {(-size.width*1.5)/2}
+          offsetY = {(-size.height*2)/2}
           scaleX={stageScale}
           scaleY={stageScale}
           x={stageX}
           y={stageY}
-
+          onMouseDown={handleClick}
+          onMouseMove={handleMouseMove}
         >
-        {points.length >= 2 && textLabel(points)}
+          <Layer
+            width={window.innerWidth*2}
+            height={window.innerHeigh*2}
+            scaleX={stageScale}
+            scaleY={stageScale}
+          >
+          {points.length >= 2 && textLabel(points)}
 
 
-          <Line
+            <Line
 
-            points={flattenedPoints}
-            stroke="black"
-            strokeWidth={5}
-            closed={isFinished}
-          />
-          {points.map((point, index) => {
-            const width = 10;
-            const x = point[0] - width / 2;
-            const y = point[1] - width / 2;
-            const startPointAttr =
-              index === 0
-                ? {
-                    hitStrokeWidth: 12,
-                    onMouseOver: handleMouseOverStartPoint,
-                    onMouseOut: handleMouseOutStartPoint
-                  }
-                : null;
-            return (
-              <Rect
-                key={index}
-                x={x}
-                y={y}
-                width={width/1.2}
-                height={width/1.2}
-                fill="white"
-                stroke="black"
-                strokeWidth={2}
-                onDragStart={handleDragStartPoint}
-                onDragMove={handleDragMovePoint}
-                onDragEnd={handleDragEndPoint}
-                draggable
-                {...startPointAttr}
-              />
-            );
-          })}
-        </Layer>
-      </Stage>
+              points={flattenedPoints}
+              stroke="black"
+              strokeWidth={5}
+              closed={isFinished}
+            />
+            {points.map((point, index) => {
+              const width = 10;
+              const x = point[0] - width / 2;
+              const y = point[1] - width / 2;
+              const startPointAttr =
+                index === 0
+                  ? {
+                      hitStrokeWidth: 12,
+                      onMouseOver: handleMouseOverStartPoint,
+                      onMouseOut: handleMouseOutStartPoint
+                    }
+                  : null;
+              return (
+                <Rect
+                  key={index}
+                  x={x}
+                  y={y}
+                  width={width/1.2}
+                  height={width/1.2}
+                  fill="white"
+                  stroke="black"
+                  strokeWidth={2}
+                  onDragStart={handleDragStartPoint}
+                  onDragMove={handleDragMovePoint}
+                  onDragEnd={handleDragEndPoint}
+                  draggable
+                  {...startPointAttr}
+                />
+              );
+            })}
+          </Layer>
+        </Stage>
     </>
   );
 }
