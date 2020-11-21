@@ -27,23 +27,25 @@ const PointsLaser = () => {
                                   height: window.innerHeight})
 
   const getMousePos = stage => {
-    return [((stage.getPointerPosition().x)-(window.innerWidth/2)), ((stage.getPointerPosition().y)-(window.innerHeight/2))];
+    return [((stage.getPointerPosition().x)-((window.innerWidth*1.5)/2)), ((stage.getPointerPosition().y)-((window.innerHeight*1.5)/2))];
   };
 
   useEffect(() => {setInterval(() =>{
     axios.get(`${API}/laser`)
-      .then(response => {setPoints(response.data.point)})
+      .then(response => {
+        setPoints(response.data.point)
+      })
   },2000)
 
-    //   const checkSize = () => {
-    //   setSize({
-    //     width: window.innerWidth,
-    //     height: window.innerHeight
-    //   });
-    // };
+      const checkSize = () => {
+      setSize({
+        width: window.innerWidth,
+        height: window.innerHeight
+      });
+    };
 
-    // window.addEventListener("resize", checkSize);
-    // return () => window.removeEventListener("resize", checkSize)
+    window.addEventListener("resize", checkSize);
+    return () => window.removeEventListener("resize", checkSize)
     }, []);
 
 
@@ -301,10 +303,10 @@ const PointsLaser = () => {
     <>
       <Menu />
       <Stage
-        width={window.innerWidth}
-        height={window.innerHeight}
-        offsetX = {-size.width/2}
-        offsetY = {-size.height/2}
+        width={window.innerWidth*1.5}
+        height={window.innerHeight*1.5}
+        offsetX = {(-size.width*1.5)/2}
+        offsetY = {(-size.height*1.5)/2}
         scaleX={stageScale}
         scaleY={stageScale}
         x={stageX}
@@ -314,10 +316,13 @@ const PointsLaser = () => {
 
       >
         <Layer
-          width={window.innerWidth}
-          height={window.innerHeigh}
-          scaleX={scale}
-          scaleY={scale}
+          width={window.innerWidth*1.5}
+          height={window.innerHeigh*1.5}
+          scaleX={stageScale}
+          scaleY={stageScale}
+          x={stageX}
+          y={stageY}
+
         >
         {points.length >= 2 && textLabel(points)}
 
