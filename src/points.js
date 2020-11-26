@@ -1,4 +1,4 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect, Fragment, useRef  } from "react";
 import ReactDOM from "react-dom";
 import { render } from "react-dom";
 import axios from 'axios'
@@ -6,11 +6,17 @@ import { Stage, Layer, Group, Line, Rect, Text, Tag, Label} from "react-konva";
 import {saveAs} from 'file-saver'
 import Menu from './core/Menu'
 import {API} from './config'
+import { Affix, Button, Select  } from 'antd';
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
+const { Option } = Select;
 
 const PointsLaser = () => {
+  const [tool, setTool] = React.useState('pen');
+  const [lines, setLines] = React.useState([]);
+  const [top, setTop] = useState(10);
+  const [bottom, setBottom] = useState(10);
   const [polar, setPolar] = useState({ theta: "", radius: "" });
   const [rectangular, setRectangular] = useState({ x: "", y: "" });
   const [points, setPoints] = useState([]);
@@ -18,7 +24,6 @@ const PointsLaser = () => {
   const [stageX, setStageX] = useState(0);
   const [stageY, setStageY] = useState(0);
   const [stageScale, setStageScale] = useState(1);
-  const [b] = useState();
   const [curMousePos, setCurMousePos] = useState([0, 0]);
   const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
   const [isFinished, setFinished] = useState(false);
@@ -26,8 +31,12 @@ const PointsLaser = () => {
   const [size, setSize] = useState({width: window.innerWidth,
                                   height: window.innerHeight})
 
+  const stageRef = useRef(null);
+  const isDrawing = useRef(false);
+  const [container, setContainer] = useState(null);
+
   const getMousePos = stage => {
-    return [((stage.getPointerPosition().x)-((window.innerWidth*1.3)/2)), ((stage.getPointerPosition().y)-((window.innerHeight*1.3)/2))];
+    return [((stage.getPointerPosition().x)-((2000)/2)), ((stage.getPointerPosition().y)-((1500)/2))];
   };
 
   useEffect(() => {setInterval(() =>{
@@ -47,6 +56,32 @@ const PointsLaser = () => {
   },2000)
 
     }, []);
+
+    const handleMouseDown = (e) => {
+      isDrawing.current = true;
+      const pos = e.target.getStage().getPointerPosition();
+      setLines([...lines, { tool, points: [pos.x, pos.y] }]);
+    };
+
+    const handleMouseMove1 = (e) => {
+      // no drawing - skipping
+      if (!isDrawing.current) {
+        return;
+      }
+      const stage = e.target.getStage();
+      const point = stage.getPointerPosition();
+      let lastLine = lines[lines.length - 1];
+      // add point
+      lastLine.points = lastLine.points.concat([point.x, point.y]);
+
+      // replace last
+      lines.splice(lines.length - 1, 1, lastLine);
+      setLines(lines.concat());
+    };
+
+    const handleMouseUp = () => {
+      isDrawing.current = false;
+    };
 
 
   const handleClick = event => {
@@ -212,13 +247,6 @@ const PointsLaser = () => {
       console.log(mesurement);
     }
 
-    const handleExportClick = (e) => {
-    e.preventDefault()
-    saveAs(b.getStage().toDataURL(), "Project.jpg");
-
-    console.log(b);
-  };
-
   const textLabel = (points) => {
     let lpoint = [];
 
@@ -299,22 +327,75 @@ const PointsLaser = () => {
       // onWheel={handleWheel}
   };
 
+  const downloadURI = (uri, name) => {
+  var link = document.createElement('a');
+  link.download = name;
+  link.href = uri;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+  const handleExport = () => {
+    const uri = stageRef.current.toDataURL();
+    console.log(uri);
+    // we also can save uri as file
+    // but in the demo on Konva website it will not work
+    // because of iframe restrictions
+    // but feel free to use it in your apps:
+    downloadURI(uri, 'stage.png');
+  };
+
   return (
-    <>
+    <Fragment>
       <Menu />
+        <Affix offsetTop={top}>
+        <Button type="primary" onClick={handleExport}>
+          Download
+        </Button>
+        <select
+        value={tool}
+        onChange={(e) => {
+          setTool(e.target.value);
+        }}
+      >
+        <option value="pen">Pen</option>
+        <option value="eraser">Eraser</option>
+      </select>
+      </Affix>
         <Stage
           width={2000}
           height={1500}
-          onWheel={handleWheel}
           offsetX = {(-2000)/2}
           offsetY = {(-1500)/2}
           scaleX={stageScale}
           scaleY={stageScale}
           x={stageX}
           y={stageY}
-          onMouseDown={handleClick}
-          onMouseMove={handleMouseMove}
+          onMouseDown={handleMouseDown}
+          onMousemove={handleMouseMove1}
+          onMouseup={handleMouseUp}
+          ref={stageRef}
         >
+
+        <Layer>
+        {lines.map((line, i) => (
+          <Line
+            x={-1000}
+            y={-750}
+            key={i}
+            points={line.points}
+            stroke="#df4b26"
+            strokeWidth={5}
+            tension={0.5}
+            lineCap="round"
+            globalCompositeOperation={
+              line.tool === 'eraser' ? 'destination-out' : 'source-over'
+            }
+          />
+        ))}
+      </Layer>
+
           <Layer
             width={2000}
             height={1500}
@@ -362,7 +443,8 @@ const PointsLaser = () => {
             })}
           </Layer>
         </Stage>
-    </>
+
+    </Fragment>
   );
 }
 
