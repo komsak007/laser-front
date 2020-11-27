@@ -55,6 +55,8 @@ const PointsLaser = () => {
     // return () => window.removeEventListener("resize", checkSize)
   },2000)
 
+  window.scrollTo(2000, 1500)
+
     }, []);
 
     const handleMouseDown = (e) => {
@@ -372,8 +374,11 @@ const PointsLaser = () => {
           scaleY={stageScale}
           x={stageX}
           y={stageY}
+          ontouchstart={handleMouseDown}
           onMouseDown={handleMouseDown}
+          ontouchmove={handleMouseMove1}
           onMousemove={handleMouseMove1}
+          ontouchend={handleMouseUp}
           onMouseup={handleMouseUp}
           ref={stageRef}
         >
