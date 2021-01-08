@@ -1,16 +1,22 @@
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect, Fragment, useRef } from "react";
 import ReactDOM from "react-dom";
 import { render } from "react-dom";
-import axios from 'axios'
-import { Stage, Layer, Group, Line, Rect, Text, Tag, Label} from "react-konva";
-import {saveAs} from 'file-saver'
-import Menu from './core/Menu'
-import {API} from './config'
+import axios from "axios";
+import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
+import { saveAs } from "file-saver";
+import Menu from "./core/Menu";
+import { API } from "./config";
+import { Affix, Button, Select } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
+const { Option } = Select;
 
 const PointsLaser = () => {
+  const [tool, setTool] = useState("pen");
+  const [lines, setLines] = useState([]);
+  const [top, setTop] = useState(10);
+  const [bottom, setBottom] = useState(10);
   const [polar, setPolar] = useState({ theta: "", radius: "" });
   const [rectangular, setRectangular] = useState({ x: "", y: "" });
   const [points, setPoints] = useState([]);
@@ -18,38 +24,72 @@ const PointsLaser = () => {
   const [stageX, setStageX] = useState(0);
   const [stageY, setStageY] = useState(0);
   const [stageScale, setStageScale] = useState(1);
-  const [b] = useState();
   const [curMousePos, setCurMousePos] = useState([0, 0]);
   const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
-  const [isFinished, setFinished] = useState(false);
-  const [xypoint,setxypoint] = useState({x1:"",y1:"",re:""});
-  const [size, setSize] = useState({width: window.innerWidth,
-                                  height: window.innerHeight})
+  const [isFinished, setFinished] = useState(true);
+  const [xypoint, setxypoint] = useState({ x1: "", y1: "", re: "" });
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
-  const getMousePos = stage => {
-    return [((stage.getPointerPosition().x)-((window.innerWidth*1.3)/2)), ((stage.getPointerPosition().y)-((window.innerHeight*1.3)/2))];
+  const stageRef = useRef(null);
+  const isDrawing = useRef(false);
+  const [container, setContainer] = useState(null);
+
+  const getMousePos = (stage) => {
+    return [
+      stage.getPointerPosition().x - 2000 / 2,
+      stage.getPointerPosition().y - 1500 / 2,
+    ];
   };
 
-  useEffect(() => {setInterval(() =>{
-    axios.get(`${API}/laser`)
-      .then(response => {
-        setPoints(response.data.point)
-      })
-    //   const checkSize = () => {
-    //   setSize({
-    //     width: window.innerWidth,
-    //     height: window.innerHeight
-    //   });
-    // };
-    //
-    // window.addEventListener("resize", checkSize);
-    // return () => window.removeEventListener("resize", checkSize)
-  },2000)
+  useEffect(() => {
+    setInterval(() => {
+      axios.get(`${API}/laser`).then((response) => {
+        setPoints(response.data.point);
+      });
+      //   const checkSize = () => {
+      //   setSize({
+      //     width: window.innerWidth,
+      //     height: window.innerHeight
+      //   });
+      // };
+      //
+      // window.addEventListener("resize", checkSize);
+      // return () => window.removeEventListener("resize", checkSize)
+    }, 3000);
 
-    }, []);
+    window.scrollTo(350, 700);
+  }, []);
 
+  const handleMouseDown = (e) => {
+    isDrawing.current = true;
+    const pos = e.target.getStage().getPointerPosition();
+    setLines([...lines, { tool, points: [pos.x, pos.y] }]);
+  };
 
-  const handleClick = event => {
+  const handleMouseMove1 = (e) => {
+    // no drawing - skipping
+    if (!isDrawing.current) {
+      return;
+    }
+    const stage = e.target.getStage();
+    const point = stage.getPointerPosition();
+    let lastLine = lines[lines.length - 1];
+    // add point
+    lastLine.points = lastLine.points.concat([point.x, point.y]);
+
+    // replace last
+    lines.splice(lines.length - 1, 1, lastLine);
+    setLines(lines.concat());
+  };
+
+  const handleMouseUp = () => {
+    isDrawing.current = false;
+  };
+
+  const handleClick = (event) => {
     const stage = event.target.getStage();
     const mousePos = getMousePos(stage);
     // console.log(mousePos);
@@ -64,28 +104,28 @@ const PointsLaser = () => {
     }
   };
 
-  const handleMouseMove = event => {
+  const handleMouseMove = (event) => {
     const stage = event.target.getStage();
     const mousePos = getMousePos(stage);
     setCurMousePos(mousePos);
   };
 
-  const handleMouseOverStartPoint = event => {
+  const handleMouseOverStartPoint = (event) => {
     if (isFinished || points.length < 3) return;
     event.target.scale({ x: 2, y: 2 });
     setMouseOverStartPoint(true);
   };
 
-  const handleMouseOutStartPoint = event => {
+  const handleMouseOutStartPoint = (event) => {
     event.target.scale({ x: 1, y: 1 });
     setMouseOverStartPoint(false);
   };
 
-  const handleDragStartPoint = event => {
+  const handleDragStartPoint = (event) => {
     console.log("start", event);
   };
 
-  const handleDragMovePoint = event => {
+  const handleDragMovePoint = (event) => {
     const index = event.target.index - 1;
     console.log(event.target);
     const pos = [event.target.attrs.x, event.target.attrs.y];
@@ -94,15 +134,15 @@ const PointsLaser = () => {
     setPoints([...points.slice(0, index), pos, ...points.slice(index + 1)]);
   };
 
-  const handleDragOutPoint = event => {
+  const handleDragOutPoint = (event) => {
     console.log("end", event);
   };
 
-  const handleDragEndPoint = event => {
+  const handleDragEndPoint = (event) => {
     console.log("end", event);
   };
 
-  const handleChange = event => {
+  const handleChange = (event) => {
     if (event.target.name === "theta") {
       setPolar({ ...polar, theta: event.target.value });
       console.log(polar.theta);
@@ -112,7 +152,7 @@ const PointsLaser = () => {
     // console.log(polar);
   };
 
-  const handleChangeRectangular = event => {
+  const handleChangeRectangular = (event) => {
     if (event.target.name === "x") {
       setRectangular({ ...rectangular, x: event.target.value });
     } else {
@@ -121,7 +161,7 @@ const PointsLaser = () => {
     // console.log(rectangular);
   };
 
-  const handleButtonClick = event => {
+  const handleButtonClick = (event) => {
     event.preventDefault();
 
     // console.log(parseFloat(polar.radius));
@@ -130,14 +170,14 @@ const PointsLaser = () => {
 
     // only a quarter (0-90 degrees)
     let x =
-      parseFloat(polar.radius*100) *
+      parseFloat(polar.radius * 100) *
       Math.cos((parseFloat(polar.theta) * Math.PI) / 180);
     let y =
-      parseFloat(polar.radius*100) *
+      parseFloat(polar.radius * 100) *
       Math.sin((parseFloat(polar.theta) * Math.PI) / 180);
-      //แปลงเรเดียนเป็นเซต้า
-      // x = Math.abs(x)
-      // y = Math.abs(y)
+    //แปลงเรเดียนเป็นเซต้า
+    // x = Math.abs(x)
+    // y = Math.abs(y)
     console.log(x);
     console.log(y);
 
@@ -146,77 +186,74 @@ const PointsLaser = () => {
     console.log(points);
   };
 
-  const handleButtonClickRectangular = event => {
+  const handleButtonClickRectangular = (event) => {
     event.preventDefault();
-
 
     // console.log(parseFloat(rectangular.x));
     // console.log(parseFloat(rectangular.y));
     //
     // // only a quarter (0-90 degrees)
-    let x = parseFloat(rectangular.x)
-    let y = parseFloat(rectangular.y)
+    let x = parseFloat(rectangular.x);
+    let y = parseFloat(rectangular.y);
     //
     // console.log(x);
     // console.log(y);
-    setPoints([...points, [x,y]]);
+    setPoints([...points, [x, y]]);
     console.log(points);
 
     // setPoints([points, data]);
     console.log(size.width);
 
-    setxypoint({...xypoint, x1:x,y2:y,re:x-y})
-
-
+    setxypoint({ ...xypoint, x1: x, y2: y, re: x - y });
   };
 
   const flattenedPoints = points
     .concat(isFinished ? [] : curMousePos)
     .reduce((a, b) => a.concat(b), []);
 
-    const scale = Math.min(
-      window.innerWidth / SCENE_BASE_WIDTH,
-      window.innerHeight / SCENE_BASE_HEIGHT
-    );
+  const scale = Math.min(
+    window.innerWidth / SCENE_BASE_WIDTH,
+    window.innerHeight / SCENE_BASE_HEIGHT
+  );
 
-    const submitData = event =>{
-      event.preventDefault();
-      for (let i = 0; i < points.length-1; i++) {
-        let x1 = points[i][0]
-        let y1 = points[i][1]
-        let x2 = points[i+1][0]
-        let y2 = points[i+1][1]
-        // console.log("x1 = " + x1 + " " + "y1 = " + y1);
-        if (x1===x2 && y1!==y2) {
-          let resultx = x1
-          let resulty = (y1+y2)/2
-          let length = y1-y2
-          length = Math.abs(length)
-          setMesurement([...mesurement,[{x:resultx,y:resulty,len:length}]])
-        }
-        else if (x1!==x2 && y1===y2) {
-          let resultx = (x1+x2)/2
-          let resulty = y1
-          let length = x1-x2
-          length = Math.abs(length)
-          setMesurement([...mesurement,[{x:resultx,y:resulty,len:length}]])
-        }
-        else if (x1!==x2 && y1!==y2) {
-          let resultx = (((x1 + x2) / 2) + 5)
-          let resulty = (((y1 + y2) / 2) + 5)
-          let length = ((x1-x2)**2 + (y1-y2)**2)**0.5
-          // length = Math.abs(length)
-          setMesurement([...mesurement,[{x:resultx,y:resulty,len:length}]])
-        }
+  const submitData = (event) => {
+    event.preventDefault();
+    for (let i = 0; i < points.length - 1; i++) {
+      let x1 = points[i][0];
+      let y1 = points[i][1];
+      let x2 = points[i + 1][0];
+      let y2 = points[i + 1][1];
+      // console.log("x1 = " + x1 + " " + "y1 = " + y1);
+      if (x1 === x2 && y1 !== y2) {
+        let resultx = x1;
+        let resulty = (y1 + y2) / 2;
+        let length = y1 - y2;
+        length = Math.abs(length);
+        setMesurement([
+          ...mesurement,
+          [{ x: resultx, y: resulty, len: length }],
+        ]);
+      } else if (x1 !== x2 && y1 === y2) {
+        let resultx = (x1 + x2) / 2;
+        let resulty = y1;
+        let length = x1 - x2;
+        length = Math.abs(length);
+        setMesurement([
+          ...mesurement,
+          [{ x: resultx, y: resulty, len: length }],
+        ]);
+      } else if (x1 !== x2 && y1 !== y2) {
+        let resultx = (x1 + x2) / 2 + 5;
+        let resulty = (y1 + y2) / 2 + 5;
+        let length = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5;
+        // length = Math.abs(length)
+        setMesurement([
+          ...mesurement,
+          [{ x: resultx, y: resulty, len: length }],
+        ]);
       }
-      console.log(mesurement);
     }
-
-    const handleExportClick = (e) => {
-    e.preventDefault()
-    saveAs(b.getStage().toDataURL(), "Project.jpg");
-
-    console.log(b);
+    console.log(mesurement);
   };
 
   const textLabel = (points) => {
@@ -227,7 +264,7 @@ const PointsLaser = () => {
       let dy = points[i + 1][1] - points[i][1];
       let x = points[i][0] + dx / 2;
       let y = points[i][1] + dy / 2;
-      let l = ((Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))*42)*0.0002645833);
+      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 42 * 0.0002645833;
       // let l = (Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))*42);
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
@@ -249,7 +286,6 @@ const PointsLaser = () => {
       else if (angle < (7 * Math.PI) / 4) direction = "left";
       else;
 
-
       lpoint = [...lpoint, { x, y, l, angle, direction }];
     }
 
@@ -267,7 +303,7 @@ const PointsLaser = () => {
             shadowColor="black"
           />
           <Text
-            text={point.l.toFixed( 3 )+" m "}
+            text={point.l.toFixed(3) + " m "}
             fontFamily="Calibri"
             fontSize={18}
             padding={5}
@@ -278,7 +314,7 @@ const PointsLaser = () => {
     });
   };
 
-  const handleWheel = e => {
+  const handleWheel = (e) => {
     e.evt.preventDefault();
 
     const scaleBy = 1.05;
@@ -286,84 +322,139 @@ const PointsLaser = () => {
     const oldScale = stage.scaleX();
     const mousePointTo = {
       x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
-      y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale
+      y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
     };
 
     const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
 
     stage.scale({ x: newScale, y: newScale });
 
-      setStageScale(stageScale,newScale)
-      setStageX(stageX,-(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale)
-      setStageX(stageX,-(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale)
-      // onWheel={handleWheel}
+    setStageScale(stageScale, newScale);
+    setStageX(
+      stageX,
+      -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale
+    );
+    setStageX(
+      stageX,
+      -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
+    );
+    // onWheel={handleWheel}
+  };
+
+  const downloadURI = (uri, name) => {
+    var link = document.createElement("a");
+    link.download = name;
+    link.href = uri;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleExport = () => {
+    const uri = stageRef.current.toDataURL();
+    console.log(uri);
+    // we also can save uri as file
+    // but in the demo on Konva website it will not work
+    // because of iframe restrictions
+    // but feel free to use it in your apps:
+    downloadURI(uri, "stage.png");
   };
 
   return (
-    <>
+    <Fragment>
       <Menu />
-        <Stage
-          width={2000}
-          height={1500}
-          onWheel={handleWheel}
-          offsetX = {(-2000)/2}
-          offsetY = {(-1500)/2}
-          scaleX={stageScale}
-          scaleY={stageScale}
-          x={stageX}
-          y={stageY}
-          onMouseDown={handleClick}
-          onMouseMove={handleMouseMove}
+      <Affix offsetTop={top}>
+        <Button type="primary" onClick={handleExport}>
+          Download
+        </Button>
+        <select
+          value={tool}
+          onChange={(e) => {
+            setTool(e.target.value);
+          }}
         >
-          <Layer
-            width={2000}
-            height={1500}
+          <option value="pen">Pen</option>
+          <option value="eraser">Eraser</option>
+        </select>
+      </Affix>
+      <Stage
+        width={2000}
+        height={1500}
+        offsetX={-2000 / 2}
+        offsetY={-1500 / 2}
+        scaleX={stageScale}
+        scaleY={stageScale}
+        x={stageX}
+        y={stageY}
+        // ontouchstart={handleMouseDown}
+        onMouseDown={handleMouseDown}
+        // ontouchmove={handleMouseMove1}
+        onMousemove={handleMouseMove1}
+        // ontouchend={handleMouseUp}
+        onMouseup={handleMouseUp}
+        ref={stageRef}
+      >
+        <Layer>
+          {lines.map((line, i) => (
+            <Line
+              x={-1000}
+              y={-750}
+              key={i}
+              points={line.points}
+              stroke="#df4b26"
+              strokeWidth={5}
+              tension={0.5}
+              lineCap="round"
+              globalCompositeOperation={
+                line.tool === "eraser" ? "destination-out" : "source-over"
+              }
+            />
+          ))}
+        </Layer>
 
-          >
+        <Layer width={2000} height={1500}>
           {points.length >= 2 && textLabel(points)}
 
-
-            <Line
-
-              points={flattenedPoints}
-              stroke="black"
-              strokeWidth={5}
-              closed={isFinished}
-            />
-            {points.map((point, index) => {
-              const width = 10;
-              const x = point[0] - width / 2;
-              const y = point[1] - width / 2;
-              const startPointAttr =
-                index === 0
-                  ? {
-                      hitStrokeWidth: 12,
-                      onMouseOver: handleMouseOverStartPoint,
-                      onMouseOut: handleMouseOutStartPoint
-                    }
-                  : null;
-              return (
-                <Rect
-                  key={index}
-                  x={x}
-                  y={y}
-                  width={width/1.2}
-                  height={width/1.2}
-                  fill="white"
-                  stroke="black"
-                  strokeWidth={2}
-                  onDragStart={handleDragStartPoint}
-                  onDragMove={handleDragMovePoint}
-                  onDragEnd={handleDragEndPoint}
-                  draggable
-                  {...startPointAttr}
-                />
-              );
-            })}
-          </Layer>
-        </Stage>
-    </>
+          <Line
+            points={flattenedPoints}
+            stroke="black"
+            strokeWidth={5}
+            // closed={isFinished}
+          />
+          {points.map((point, index) => {
+            const width = 10;
+            const x = point[0] - width / 2;
+            const y = point[1] - width / 2;
+            const startPointAttr =
+              index === 0
+                ? {
+                    hitStrokeWidth: 12,
+                    onMouseOver: handleMouseOverStartPoint,
+                    onMouseOut: handleMouseOutStartPoint,
+                  }
+                : null;
+            return (
+              <Rect
+                key={index}
+                x={x}
+                y={y}
+                width={width / 1.2}
+                height={width / 1.2}
+                fill="white"
+                stroke="black"
+                strokeWidth={2}
+                onDragStart={handleDragStartPoint}
+                onDragMove={handleDragMovePoint}
+                onDragEnd={handleDragEndPoint}
+                draggable
+                {...startPointAttr}
+              />
+            );
+          })}
+        </Layer>
+      </Stage>
+    </Fragment>
   );
-}
+};
 
-export default PointsLaser
+export default PointsLaser;
