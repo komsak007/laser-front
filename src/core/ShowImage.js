@@ -16,7 +16,11 @@ const ShowImage = ({ item, url }) => {
     <div className="product-img">
       <img
         className="mb-3"
-        src={check ? `${API}/${url}/photo/${item._id}` : ""}
+        src={
+          check
+            ? `${API}/${url}/photo/${item._id}`
+            : "https://thaigifts.or.th/wp-content/uploads/2017/03/no-image.jpg"
+        }
         alt={item.name}
         width="200px"
         height="200px"
