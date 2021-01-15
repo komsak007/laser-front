@@ -2,10 +2,12 @@ import React, { useState, useEffect, Fragment, useRef } from "react";
 import ReactDOM from "react-dom";
 import { render } from "react-dom";
 import axios from "axios";
+import { createLaser } from "./admin/apiAdmin";
 import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
 import { saveAs } from "file-saver";
 import Menu from "./core/Menu";
 import { API } from "./config";
+import { toast } from "react-toastify";
 import { Affix, Button, Select } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
@@ -20,6 +22,7 @@ const PointsLaser = () => {
   const [polar, setPolar] = useState({ theta: "", radius: "" });
   const [rectangular, setRectangular] = useState({ x: "", y: "" });
   const [points, setPoints] = useState([]);
+  const [order, setOrder] = useState("");
   const [mesurement, setMesurement] = useState([]);
   const [stageX, setStageX] = useState(0);
   const [stageY, setStageY] = useState(0);
@@ -71,6 +74,7 @@ const PointsLaser = () => {
 
   const handleMouseMove1 = (e) => {
     // no drawing - skipping
+    // console.log(e.evt);
     if (!isDrawing.current) {
       return;
     }
@@ -83,6 +87,7 @@ const PointsLaser = () => {
     // replace last
     lines.splice(lines.length - 1, 1, lastLine);
     setLines(lines.concat());
+    console.log(lines);
   };
 
   const handleMouseUp = () => {
@@ -351,13 +356,9 @@ const PointsLaser = () => {
   };
 
   const handleExport = () => {
-    const uri = stageRef.current.toDataURL();
-    console.log(uri);
-    // we also can save uri as file
-    // but in the demo on Konva website it will not work
-    // because of iframe restrictions
-    // but feel free to use it in your apps:
-    downloadURI(uri, "stage.png");
+    createLaser({ points, order, lines }).then(() =>
+      toast.success("Save data to database")
+    );
   };
 
   return (
@@ -365,8 +366,18 @@ const PointsLaser = () => {
       <Menu />
       <Affix offsetTop={top}>
         <Button type="primary" onClick={handleExport}>
-          Download
+          Save
         </Button>
+        <input
+          type="text"
+          name="name"
+          className="md-3 ml-1 mr-3"
+          onChange={(e) => {
+            setOrder(e.target.value);
+            console.log(order);
+          }}
+          value={order}
+        />
         <select
           value={tool}
           onChange={(e) => {
@@ -386,11 +397,11 @@ const PointsLaser = () => {
         scaleY={stageScale}
         x={stageX}
         y={stageY}
-        // ontouchstart={handleMouseDown}
+        ontouchstart={handleMouseDown}
         onMouseDown={handleMouseDown}
-        // ontouchmove={handleMouseMove1}
+        ontouchmove={handleMouseMove1}
         onMousemove={handleMouseMove1}
-        // ontouchend={handleMouseUp}
+        ontouchend={handleMouseUp}
         onMouseup={handleMouseUp}
         ref={stageRef}
       >

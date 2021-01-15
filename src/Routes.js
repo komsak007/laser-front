@@ -1,5 +1,8 @@
 import React from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 import Signup from "./user/Signup";
 import Signin from "./user/Signin";
 import Home from "./core/Home";
@@ -17,6 +20,7 @@ import UpdateProduct from "./admin/UpdateProduct";
 const Routes = () => {
   return (
     <BrowserRouter>
+      <ToastContainer />
       <Switch>
         <PrivateRoute path="/" exact component={Home} />
         <Route path="/signin" exact component={Signin} />
