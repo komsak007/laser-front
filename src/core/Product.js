@@ -9,7 +9,7 @@ var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
 const { Option } = Select;
 
-const PointsLaser = ({ match }) => {
+const Product = ({ match }) => {
   const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState([]);
   const [top, setTop] = useState(10);
@@ -246,4 +246,4 @@ const PointsLaser = ({ match }) => {
   );
 };
 
-export default PointsLaser;
+export default Product;
