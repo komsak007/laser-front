@@ -1,9 +1,10 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import { read } from "./apiCore";
+import BluePrint from "../laser/BluePrint"
 import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
 import Menu from "../core/Menu";
 import { toast } from "react-toastify";
-import { Affix, Select } from "antd";
+import { Affix, Select, Checkbox } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
@@ -25,6 +26,7 @@ const Product = ({ match }) => {
   const [curMousePos, setCurMousePos] = useState([0, 0]);
   const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
   const [isFinished, setFinished] = useState(true);
+  const [check, setCheck] = useState(false)
   const [xypoint, setxypoint] = useState({ x1: "", y1: "", re: "" });
   const [size, setSize] = useState({
     width: window.innerWidth,
@@ -164,8 +166,9 @@ const Product = ({ match }) => {
           Open Mark
         </button>
         <button className="btn btn-danger mr-2 mt-2" onClick={clearMark}>
-          Clear Mark
+          Close Mark
         </button>
+        <span className='pl-2'>Order:</span>
         <input
           type="text"
           name="name"
@@ -177,7 +180,10 @@ const Product = ({ match }) => {
           value={order}
           disabled
         />
+        {check ? (<span className='p-2'>Close Dxf: </span>) : (<span className='p-2'>Open Dxf: </span>)}
+        <Checkbox onChange={(e) => setCheck(e.target.checked)} />
       </Affix>
+      {check ? <BluePrint points={points} /> :
       <Stage
         width={2000}
         height={1500}
@@ -241,7 +247,7 @@ const Product = ({ match }) => {
             );
           })}
         </Layer>
-      </Stage>
+      </Stage>}
     </Fragment>
   );
 };

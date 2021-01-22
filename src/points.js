@@ -3,12 +3,13 @@ import ReactDOM from "react-dom";
 import { render } from "react-dom";
 import axios from "axios";
 import { createLaser } from "./admin/apiAdmin";
+import BluePrint from "./laser/BluePrint"
 import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
 import { saveAs } from "file-saver";
 import Menu from "./core/Menu";
 import { API } from "./config";
 import { toast } from "react-toastify";
-import { Affix, Button, Select } from "antd";
+import { Affix, Button, Select, Checkbox } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
@@ -30,6 +31,7 @@ const PointsLaser = () => {
   const [curMousePos, setCurMousePos] = useState([0, 0]);
   const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
   const [isFinished, setFinished] = useState(true);
+  const [check, setCheck] = useState(false)
   const [xypoint, setxypoint] = useState({ x1: "", y1: "", re: "" });
   const [size, setSize] = useState({
     width: window.innerWidth,
@@ -362,19 +364,20 @@ const PointsLaser = () => {
   };
 
   return (
+    <>
     <Fragment>
       <Menu />
       <Affix offsetTop={top}>
         <Button type="primary" onClick={handleExport}>
           Save
         </Button>
+        <span className='pl-2'>Order:</span>
         <input
           type="text"
           name="name"
           className="md-3 ml-1 mr-3"
           onChange={(e) => {
             setOrder(e.target.value);
-            console.log(order);
           }}
           value={order}
         />
@@ -387,7 +390,10 @@ const PointsLaser = () => {
           <option value="pen">Pen</option>
           <option value="eraser">Eraser</option>
         </select>
+        {check ? (<span className='p-2'>Close Dxf: </span>) : (<span className='p-2'>Open Dxf: </span>)}
+        <Checkbox onChange={(e) => setCheck(e.target.checked)} />
       </Affix>
+      {check ? <BluePrint points={points} /> :
       <Stage
         width={2000}
         height={1500}
@@ -463,8 +469,9 @@ const PointsLaser = () => {
             );
           })}
         </Layer>
-      </Stage>
+      </Stage>}
     </Fragment>
+    </>
   );
 };
 
