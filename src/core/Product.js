@@ -1,10 +1,13 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import { read } from "./apiCore";
-import BluePrint from "../laser/BluePrint"
+import BluePrint, {download} from "../laser/BluePrint"
 import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
 import Menu from "../core/Menu";
+import PolyLine from "../laser/PolyLine";
+import makerjs from "makerjs";
 import { toast } from "react-toastify";
-import { Affix, Select, Checkbox } from "antd";
+import { DownloadOutlined } from '@ant-design/icons';
+import { Affix, Select, Checkbox, Button } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
@@ -47,6 +50,12 @@ const Product = ({ match }) => {
   useEffect(() => {
     loadProduct();
   }, []);
+
+  let model = new PolyLine({points});
+
+  //export DXF
+  const filename = "Save DXF";
+  const file = makerjs.exporter.toDXF(model);
 
   const loadProduct = () => {
     read(match.params.productId).then((res) => {
@@ -158,6 +167,24 @@ const Product = ({ match }) => {
     // onWheel={handleWheel}
   };
 
+   const download = (data, filename, type) => {
+       var file = new Blob([data], {type: type});
+       if (window.navigator.msSaveOrOpenBlob) // IE10+
+           window.navigator.msSaveOrOpenBlob(file, filename);
+       else { // Others
+           var a = document.createElement("a"),
+                   url = URL.createObjectURL(file);
+           a.href = url;
+           a.download = filename;
+           document.body.appendChild(a);
+           a.click();
+           setTimeout(function() {
+               document.body.removeChild(a);
+               window.URL.revokeObjectURL(url);
+           }, 0);
+       }
+   }
+
   return (
     <Fragment>
       <Menu />
@@ -183,7 +210,14 @@ const Product = ({ match }) => {
         {check ? (<span className='p-2'>Close Dxf: </span>) : (<span className='p-2'>Open Dxf: </span>)}
         <Checkbox onChange={(e) => setCheck(e.target.checked)} />
       </Affix>
-      {check ? <BluePrint points={points} /> :
+      {check ? (
+        <>
+        <Button type="Dashed" className="mt-3 ml-2" shape="round" icon={<DownloadOutlined />} onClick={() => download(file, "Output.dxf", "dxf")}>
+          Download
+        </Button>
+        <BluePrint points={points} />
+        </>
+    ) :
       <Stage
         width={2000}
         height={1500}
