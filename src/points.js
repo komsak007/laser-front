@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { render } from "react-dom";
 import axios from "axios";
 import { createLaser } from "./admin/apiAdmin";
-import BluePrint from "./laser/BluePrint"
+import BluePrint from "./laser/BluePrint";
 import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
 import { saveAs } from "file-saver";
 import Menu from "./core/Menu";
@@ -31,7 +31,7 @@ const PointsLaser = () => {
   const [curMousePos, setCurMousePos] = useState([0, 0]);
   const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
   const [isFinished, setFinished] = useState(true);
-  const [check, setCheck] = useState(false)
+  const [check, setCheck] = useState(false);
   const [xypoint, setxypoint] = useState({ x1: "", y1: "", re: "" });
   const [size, setSize] = useState({
     width: window.innerWidth,
@@ -365,112 +365,119 @@ const PointsLaser = () => {
 
   return (
     <>
-    <Fragment>
-      <Menu />
-      <Affix offsetTop={top}>
-        <Button type="primary" onClick={handleExport}>
-          Save
-        </Button>
-        <span className='pl-2'>Order:</span>
-        <input
-          type="text"
-          name="name"
-          className="md-3 ml-1 mr-3"
-          onChange={(e) => {
-            setOrder(e.target.value);
-          }}
-          value={order}
-        />
-        <select
-          value={tool}
-          onChange={(e) => {
-            setTool(e.target.value);
-          }}
-        >
-          <option value="pen">Pen</option>
-          <option value="eraser">Eraser</option>
-        </select>
-        {check ? (<span className='p-2'>Close Dxf: </span>) : (<span className='p-2'>Open Dxf: </span>)}
-        <Checkbox onChange={(e) => setCheck(e.target.checked)} />
-      </Affix>
-      {check ? <BluePrint points={points} /> :
-      <Stage
-        width={2000}
-        height={1500}
-        offsetX={-2000 / 2}
-        offsetY={-1500 / 2}
-        scaleX={stageScale}
-        scaleY={stageScale}
-        x={stageX}
-        y={stageY}
-        ontouchstart={handleMouseDown}
-        onMouseDown={handleMouseDown}
-        ontouchmove={handleMouseMove1}
-        onMousemove={handleMouseMove1}
-        ontouchend={handleMouseUp}
-        onMouseup={handleMouseUp}
-        ref={stageRef}
-      >
-        <Layer>
-          {lines.map((line, i) => (
-            <Line
-              x={-1000}
-              y={-750}
-              key={i}
-              points={line.points}
-              stroke="#df4b26"
-              strokeWidth={5}
-              tension={0.5}
-              lineCap="round"
-              globalCompositeOperation={
-                line.tool === "eraser" ? "destination-out" : "source-over"
-              }
-            />
-          ))}
-        </Layer>
-
-        <Layer width={2000} height={1500}>
-          {points.length >= 2 && textLabel(points)}
-
-          <Line
-            points={flattenedPoints}
-            stroke="black"
-            strokeWidth={5}
-            // closed={isFinished}
+      <Fragment>
+        <Menu />
+        <Affix offsetTop={top}>
+          <Button type="primary" onClick={handleExport}>
+            Save
+          </Button>
+          <span className="pl-2">Order:</span>
+          <input
+            type="text"
+            name="name"
+            className="md-3 ml-1 mr-3"
+            onChange={(e) => {
+              setOrder(e.target.value);
+            }}
+            value={order}
           />
-          {points.map((point, index) => {
-            const width = 10;
-            const x = point[0] - width / 2;
-            const y = point[1] - width / 2;
-            const startPointAttr =
-              index === 0
-                ? {
-                    hitStrokeWidth: 12,
-                    onMouseOver: handleMouseOverStartPoint,
-                    onMouseOut: handleMouseOutStartPoint,
+          <select
+            value={tool}
+            onChange={(e) => {
+              setTool(e.target.value);
+            }}
+          >
+            <option value="pen">Pen</option>
+            <option value="eraser">Eraser</option>
+          </select>
+          {check ? (
+            <span className="p-2">Close Dxf: </span>
+          ) : (
+            <span className="p-2">Open Dxf: </span>
+          )}
+          <Checkbox onChange={(e) => setCheck(e.target.checked)} />
+        </Affix>
+        {check ? (
+          <BluePrint points={points} />
+        ) : (
+          <Stage
+            width={2000}
+            height={1500}
+            offsetX={-2000 / 2}
+            offsetY={-1500 / 2}
+            scaleX={stageScale}
+            scaleY={stageScale}
+            x={stageX}
+            y={stageY}
+            ontouchstart={handleMouseDown}
+            onMouseDown={handleMouseDown}
+            ontouchmove={handleMouseMove1}
+            onMousemove={handleMouseMove1}
+            ontouchend={handleMouseUp}
+            onMouseup={handleMouseUp}
+            ref={stageRef}
+          >
+            <Layer>
+              {lines.map((line, i) => (
+                <Line
+                  x={-1000}
+                  y={-750}
+                  key={i}
+                  points={line.points}
+                  stroke="#df4b26"
+                  strokeWidth={5}
+                  tension={0.5}
+                  lineCap="round"
+                  globalCompositeOperation={
+                    line.tool === "eraser" ? "destination-out" : "source-over"
                   }
-                : null;
-            return (
-              <Rect
-                key={index}
-                x={x}
-                y={y}
-                width={width / 1.2}
-                height={width / 1.2}
-                fill="white"
+                />
+              ))}
+            </Layer>
+
+            <Layer width={2000} height={1500}>
+              {points.length >= 2 && textLabel(points)}
+
+              <Line
+                points={flattenedPoints}
                 stroke="black"
-                strokeWidth={2}
-                onDragStart={handleDragStartPoint}
-                onDragMove={handleDragMovePoint}
-                onDragEnd={handleDragEndPoint}
-                draggable
-                {...startPointAttr}
+                strokeWidth={5}
+                // closed={isFinished}
               />
-            );
-          })}
-        </Layer>
-      </Stage>}
-    </Fragment>
+              {points.map((point, index) => {
+                const width = 10;
+                const x = point[0] - width / 2;
+                const y = point[1] - width / 2;
+                const startPointAttr =
+                  index === 0
+                    ? {
+                        hitStrokeWidth: 12,
+                        onMouseOver: handleMouseOverStartPoint,
+                        onMouseOut: handleMouseOutStartPoint,
+                      }
+                    : null;
+                return (
+                  <Rect
+                    key={index}
+                    x={x}
+                    y={y}
+                    width={width / 1.2}
+                    height={width / 1.2}
+                    fill="white"
+                    stroke="black"
+                    strokeWidth={2}
+                    onDragStart={handleDragStartPoint}
+                    onDragMove={handleDragMovePoint}
+                    onDragEnd={handleDragEndPoint}
+                    draggable
+                    {...startPointAttr}
+                  />
+                );
+              })}
+            </Layer>
+          </Stage>
+        )}
+      </Fragment>
     </>
   );
 };

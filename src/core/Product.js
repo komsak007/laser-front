@@ -1,12 +1,12 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import { read } from "./apiCore";
-import BluePrint, {download} from "../laser/BluePrint"
+import BluePrint, { download } from "../laser/BluePrint";
 import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
 import Menu from "../core/Menu";
 import PolyLine from "../laser/PolyLine";
 import makerjs from "makerjs";
 import { toast } from "react-toastify";
-import { DownloadOutlined } from '@ant-design/icons';
+import { DownloadOutlined } from "@ant-design/icons";
 import { Affix, Select, Checkbox, Button } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
@@ -29,7 +29,7 @@ const Product = ({ match }) => {
   const [curMousePos, setCurMousePos] = useState([0, 0]);
   const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
   const [isFinished, setFinished] = useState(true);
-  const [check, setCheck] = useState(false)
+  const [check, setCheck] = useState(false);
   const [xypoint, setxypoint] = useState({ x1: "", y1: "", re: "" });
   const [size, setSize] = useState({
     width: window.innerWidth,
@@ -51,7 +51,7 @@ const Product = ({ match }) => {
     loadProduct();
   }, []);
 
-  let model = new PolyLine({points});
+  let model = new PolyLine({ points });
 
   //export DXF
   const filename = "Save DXF";
@@ -167,23 +167,25 @@ const Product = ({ match }) => {
     // onWheel={handleWheel}
   };
 
-   const download = (data, filename, type) => {
-       var file = new Blob([data], {type: type});
-       if (window.navigator.msSaveOrOpenBlob) // IE10+
-           window.navigator.msSaveOrOpenBlob(file, filename);
-       else { // Others
-           var a = document.createElement("a"),
-                   url = URL.createObjectURL(file);
-           a.href = url;
-           a.download = filename;
-           document.body.appendChild(a);
-           a.click();
-           setTimeout(function() {
-               document.body.removeChild(a);
-               window.URL.revokeObjectURL(url);
-           }, 0);
-       }
-   }
+  const download = (data, filename, type) => {
+    var file = new Blob([data], { type: type });
+    if (window.navigator.msSaveOrOpenBlob)
+      // IE10+
+      window.navigator.msSaveOrOpenBlob(file, filename);
+    else {
+      // Others
+      var a = document.createElement("a"),
+        url = URL.createObjectURL(file);
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () {
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      }, 0);
+    }
+  };
 
   return (
     <Fragment>
@@ -195,7 +197,7 @@ const Product = ({ match }) => {
         <button className="btn btn-danger mr-2 mt-2" onClick={clearMark}>
           Close Mark
         </button>
-        <span className='pl-2'>Order:</span>
+        <span className="pl-2">Order:</span>
         <input
           type="text"
           name="name"
@@ -207,81 +209,92 @@ const Product = ({ match }) => {
           value={order}
           disabled
         />
-        {check ? (<span className='p-2'>Close Dxf: </span>) : (<span className='p-2'>Open Dxf: </span>)}
+        {check ? (
+          <span className="p-2">Close Dxf: </span>
+        ) : (
+          <span className="p-2">Open Dxf: </span>
+        )}
         <Checkbox onChange={(e) => setCheck(e.target.checked)} />
       </Affix>
       {check ? (
         <>
-        <Button type="Dashed" className="mt-3 ml-2" shape="round" icon={<DownloadOutlined />} onClick={() => download(file, "Output.dxf", "dxf")}>
-          Download
-        </Button>
-        <BluePrint points={points} />
+          <Button
+            type="Dashed"
+            className="mt-3 ml-2"
+            shape="round"
+            icon={<DownloadOutlined />}
+            onClick={() => download(file, "Output.dxf", "dxf")}
+          >
+            Download
+          </Button>
+          <BluePrint points={points} />
         </>
-    ) :
-      <Stage
-        width={2000}
-        height={1500}
-        offsetX={-2000 / 2}
-        offsetY={-1500 / 2}
-        scaleX={stageScale}
-        scaleY={stageScale}
-        x={stageX}
-        y={stageY}
-      >
-        <Layer>
-          {lines.map((line, i) => (
-            <Line
-              x={-1000}
-              y={-750}
-              key={i}
-              points={line.points}
-              stroke="#df4b26"
-              strokeWidth={5}
-              tension={0.5}
-              lineCap="round"
-              globalCompositeOperation={
-                line.tool === "eraser" ? "destination-out" : "source-over"
-              }
-            />
-          ))}
-        </Layer>
-
-        <Layer width={2000} height={1500}>
-          {points.length >= 2 && textLabel(points)}
-
-          <Line
-            points={flattenedPoints}
-            stroke="black"
-            strokeWidth={5}
-            // closed={isFinished}
-          />
-          {points.map((point, index) => {
-            const width = 10;
-            const x = point[0] - width / 2;
-            const y = point[1] - width / 2;
-            const startPointAttr =
-              index === 0
-                ? {
-                    hitStrokeWidth: 12,
-                  }
-                : null;
-            return (
-              <Rect
-                key={index}
-                x={x}
-                y={y}
-                width={width / 1.2}
-                height={width / 1.2}
-                fill="white"
-                stroke="black"
-                strokeWidth={2}
-                draggable
-                {...startPointAttr}
+      ) : (
+        <Stage
+          width={2000}
+          height={1500}
+          offsetX={-2000 / 2}
+          offsetY={-1500 / 2}
+          scaleX={stageScale}
+          scaleY={stageScale}
+          x={stageX}
+          y={stageY}
+        >
+          <Layer>
+            {lines.map((line, i) => (
+              <Line
+                x={-1000}
+                y={-750}
+                key={i}
+                points={line.points}
+                stroke="#df4b26"
+                strokeWidth={5}
+                tension={0.5}
+                lineCap="round"
+                globalCompositeOperation={
+                  line.tool === "eraser" ? "destination-out" : "source-over"
+                }
               />
-            );
-          })}
-        </Layer>
-      </Stage>}
+            ))}
+          </Layer>
+
+          <Layer width={2000} height={1500}>
+            {points.length >= 2 && textLabel(points)}
+
+            <Line
+              points={flattenedPoints}
+              stroke="black"
+              strokeWidth={5}
+              // closed={isFinished}
+            />
+            {points.map((point, index) => {
+              const width = 10;
+              const x = point[0] - width / 2;
+              const y = point[1] - width / 2;
+              const startPointAttr =
+                index === 0
+                  ? {
+                      hitStrokeWidth: 12,
+                    }
+                  : null;
+              return (
+                <Rect
+                  key={index}
+                  x={x}
+                  y={y}
+                  width={width / 1.2}
+                  height={width / 1.2}
+                  fill="white"
+                  stroke="black"
+                  strokeWidth={2}
+                  draggable
+                  {...startPointAttr}
+                />
+              );
+            })}
+          </Layer>
+        </Stage>
+      )}
     </Fragment>
   );
 };
