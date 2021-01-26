@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Link, Redirect } from "react-router-dom";
 import ShowImage from "./ShowImage";
 import { isAuthenticated } from "../auth";
-import { getProducts, deleteProduct } from "../admin/apiAdmin";
-import { API } from "../config";
+import { deleteProduct } from "../admin/apiAdmin";
 
 const Card = ({
   product,

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import { read } from "./apiCore";
-import BluePrint, { download } from "../laser/BluePrint";
-import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
+import BluePrint from "../laser/BluePrint";
+import { Stage, Layer, Line, Rect, Text, Tag, Label } from "react-konva";
 import Menu from "../core/Menu";
 import PolyLine from "../laser/PolyLine";
 import makerjs from "makerjs";
@@ -11,41 +11,18 @@ import { Affix, Select, Checkbox, Button } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
-const { Option } = Select;
 
 const Product = ({ match }) => {
-  const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState([]);
   const [top, setTop] = useState(10);
-  const [bottom, setBottom] = useState(10);
-  const [polar, setPolar] = useState({ theta: "", radius: "" });
-  const [rectangular, setRectangular] = useState({ x: "", y: "" });
   const [points, setPoints] = useState([]);
   const [order, setOrder] = useState("");
-  const [mesurement, setMesurement] = useState([]);
   const [stageX, setStageX] = useState(0);
-  const [stageY, setStageY] = useState(0);
+  const [stageY] = useState(0);
   const [stageScale, setStageScale] = useState(1);
   const [curMousePos, setCurMousePos] = useState([0, 0]);
-  const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
-  const [isFinished, setFinished] = useState(true);
+  const [isFinished] = useState(true);
   const [check, setCheck] = useState(false);
-  const [xypoint, setxypoint] = useState({ x1: "", y1: "", re: "" });
-  const [size, setSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
-
-  const stageRef = useRef(null);
-  const isDrawing = useRef(false);
-  const [container, setContainer] = useState(null);
-
-  const getMousePos = (stage) => {
-    return [
-      stage.getPointerPosition().x - 2000 / 2,
-      stage.getPointerPosition().y - 1500 / 2,
-    ];
-  };
 
   useEffect(() => {
     loadProduct();
@@ -138,33 +115,6 @@ const Product = ({ match }) => {
         </Label>
       );
     });
-  };
-
-  const handleWheel = (e) => {
-    e.evt.preventDefault();
-
-    const scaleBy = 1.05;
-    const stage = e.target.getStage();
-    const oldScale = stage.scaleX();
-    const mousePointTo = {
-      x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
-      y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
-    };
-
-    const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-
-    stage.scale({ x: newScale, y: newScale });
-
-    setStageScale(stageScale, newScale);
-    setStageX(
-      stageX,
-      -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale
-    );
-    setStageX(
-      stageX,
-      -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
-    );
-    // onWheel={handleWheel}
   };
 
   const download = (data, filename, type) => {

@@ -1,11 +1,8 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
-import ReactDOM from "react-dom";
-import { render } from "react-dom";
 import axios from "axios";
 import { createLaser } from "./admin/apiAdmin";
 import BluePrint from "./laser/BluePrint";
-import { Stage, Layer, Group, Line, Rect, Text, Tag, Label } from "react-konva";
-import { saveAs } from "file-saver";
+import { Stage, Layer, Line, Rect, Text, Tag, Label } from "react-konva";
 import Menu from "./core/Menu";
 import { API } from "./config";
 import { toast } from "react-toastify";
@@ -13,34 +10,31 @@ import { Affix, Button, Select, Checkbox } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
-const { Option } = Select;
 
 const PointsLaser = () => {
   const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState([]);
-  const [top, setTop] = useState(10);
-  const [bottom, setBottom] = useState(10);
+  const [top] = useState(10);
   const [polar, setPolar] = useState({ theta: "", radius: "" });
   const [rectangular, setRectangular] = useState({ x: "", y: "" });
   const [points, setPoints] = useState([]);
   const [order, setOrder] = useState("");
   const [mesurement, setMesurement] = useState([]);
   const [stageX, setStageX] = useState(0);
-  const [stageY, setStageY] = useState(0);
+  const [stageY] = useState(0);
   const [stageScale, setStageScale] = useState(1);
   const [curMousePos, setCurMousePos] = useState([0, 0]);
   const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
   const [isFinished, setFinished] = useState(true);
   const [check, setCheck] = useState(false);
   const [xypoint, setxypoint] = useState({ x1: "", y1: "", re: "" });
-  const [size, setSize] = useState({
+  const [size] = useState({
     width: window.innerWidth,
     height: window.innerHeight,
   });
 
   const stageRef = useRef(null);
   const isDrawing = useRef(false);
-  const [container, setContainer] = useState(null);
 
   const getMousePos = (stage) => {
     return [
@@ -96,27 +90,6 @@ const PointsLaser = () => {
     isDrawing.current = false;
   };
 
-  const handleClick = (event) => {
-    const stage = event.target.getStage();
-    const mousePos = getMousePos(stage);
-    // console.log(mousePos);
-    if (isFinished) {
-      return;
-    }
-    if (isMouseOverStartPoint && points.length >= 3) {
-      setFinished(true);
-    } else {
-      setPoints([...points, mousePos]);
-      // console.log(points);
-    }
-  };
-
-  const handleMouseMove = (event) => {
-    const stage = event.target.getStage();
-    const mousePos = getMousePos(stage);
-    setCurMousePos(mousePos);
-  };
-
   const handleMouseOverStartPoint = (event) => {
     if (isFinished || points.length < 3) return;
     event.target.scale({ x: 2, y: 2 });
@@ -141,77 +114,8 @@ const PointsLaser = () => {
     setPoints([...points.slice(0, index), pos, ...points.slice(index + 1)]);
   };
 
-  const handleDragOutPoint = (event) => {
-    console.log("end", event);
-  };
-
   const handleDragEndPoint = (event) => {
     console.log("end", event);
-  };
-
-  const handleChange = (event) => {
-    if (event.target.name === "theta") {
-      setPolar({ ...polar, theta: event.target.value });
-      console.log(polar.theta);
-    } else {
-      setPolar({ ...polar, radius: event.target.value });
-    }
-    // console.log(polar);
-  };
-
-  const handleChangeRectangular = (event) => {
-    if (event.target.name === "x") {
-      setRectangular({ ...rectangular, x: event.target.value });
-    } else {
-      setRectangular({ ...rectangular, y: event.target.value });
-    }
-    // console.log(rectangular);
-  };
-
-  const handleButtonClick = (event) => {
-    event.preventDefault();
-
-    // console.log(parseFloat(polar.radius));
-    // console.log(parseFloat(polar.theta));
-    console.log(parseFloat(polar.theta));
-
-    // only a quarter (0-90 degrees)
-    let x =
-      parseFloat(polar.radius * 100) *
-      Math.cos((parseFloat(polar.theta) * Math.PI) / 180);
-    let y =
-      parseFloat(polar.radius * 100) *
-      Math.sin((parseFloat(polar.theta) * Math.PI) / 180);
-    //แปลงเรเดียนเป็นเซต้า
-    // x = Math.abs(x)
-    // y = Math.abs(y)
-    console.log(x);
-    console.log(y);
-
-    setPoints([...points, [x, y]]);
-
-    console.log(points);
-  };
-
-  const handleButtonClickRectangular = (event) => {
-    event.preventDefault();
-
-    // console.log(parseFloat(rectangular.x));
-    // console.log(parseFloat(rectangular.y));
-    //
-    // // only a quarter (0-90 degrees)
-    let x = parseFloat(rectangular.x);
-    let y = parseFloat(rectangular.y);
-    //
-    // console.log(x);
-    // console.log(y);
-    setPoints([...points, [x, y]]);
-    console.log(points);
-
-    // setPoints([points, data]);
-    console.log(size.width);
-
-    setxypoint({ ...xypoint, x1: x, y2: y, re: x - y });
   };
 
   const flattenedPoints = points
@@ -222,46 +126,6 @@ const PointsLaser = () => {
     window.innerWidth / SCENE_BASE_WIDTH,
     window.innerHeight / SCENE_BASE_HEIGHT
   );
-
-  const submitData = (event) => {
-    event.preventDefault();
-    for (let i = 0; i < points.length - 1; i++) {
-      let x1 = points[i][0];
-      let y1 = points[i][1];
-      let x2 = points[i + 1][0];
-      let y2 = points[i + 1][1];
-      // console.log("x1 = " + x1 + " " + "y1 = " + y1);
-      if (x1 === x2 && y1 !== y2) {
-        let resultx = x1;
-        let resulty = (y1 + y2) / 2;
-        let length = y1 - y2;
-        length = Math.abs(length);
-        setMesurement([
-          ...mesurement,
-          [{ x: resultx, y: resulty, len: length }],
-        ]);
-      } else if (x1 !== x2 && y1 === y2) {
-        let resultx = (x1 + x2) / 2;
-        let resulty = y1;
-        let length = x1 - x2;
-        length = Math.abs(length);
-        setMesurement([
-          ...mesurement,
-          [{ x: resultx, y: resulty, len: length }],
-        ]);
-      } else if (x1 !== x2 && y1 !== y2) {
-        let resultx = (x1 + x2) / 2 + 5;
-        let resulty = (y1 + y2) / 2 + 5;
-        let length = ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** 0.5;
-        // length = Math.abs(length)
-        setMesurement([
-          ...mesurement,
-          [{ x: resultx, y: resulty, len: length }],
-        ]);
-      }
-    }
-    console.log(mesurement);
-  };
 
   const textLabel = (points) => {
     let lpoint = [];
@@ -319,42 +183,6 @@ const PointsLaser = () => {
         </Label>
       );
     });
-  };
-
-  const handleWheel = (e) => {
-    e.evt.preventDefault();
-
-    const scaleBy = 1.05;
-    const stage = e.target.getStage();
-    const oldScale = stage.scaleX();
-    const mousePointTo = {
-      x: stage.getPointerPosition().x / oldScale - stage.x() / oldScale,
-      y: stage.getPointerPosition().y / oldScale - stage.y() / oldScale,
-    };
-
-    const newScale = e.evt.deltaY > 0 ? oldScale * scaleBy : oldScale / scaleBy;
-
-    stage.scale({ x: newScale, y: newScale });
-
-    setStageScale(stageScale, newScale);
-    setStageX(
-      stageX,
-      -(mousePointTo.x - stage.getPointerPosition().x / newScale) * newScale
-    );
-    setStageX(
-      stageX,
-      -(mousePointTo.y - stage.getPointerPosition().y / newScale) * newScale
-    );
-    // onWheel={handleWheel}
-  };
-
-  const downloadURI = (uri, name) => {
-    var link = document.createElement("a");
-    link.download = name;
-    link.href = uri;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
   };
 
   const handleExport = () => {

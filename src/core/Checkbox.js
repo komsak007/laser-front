@@ -1,64 +1,43 @@
-import React, {useState, useEffect} from 'react'
-import {deleteCategories} from '../admin/apiAdmin'
-import {Redirect} from 'react-router-dom'
-import {isAuthenticated} from '../auth'
+import React, { useState } from "react";
+import { deleteCategories } from "../admin/apiAdmin";
+import { Redirect } from "react-router-dom";
+import { isAuthenticated } from "../auth";
 
-const Checkbox = ({categories, handleFilters}) => {
-  const [checked, setChecked] = useState([])
+const Checkbox = ({ categories, handleFilters }) => {
+  const [checked, setChecked] = useState([]);
   const [values, setValues] = useState({
-    redirectToReferrer: false
-  })
+    redirectToReferrer: false,
+  });
 
-  const {user, token} = isAuthenticated()
+  const { user, token } = isAuthenticated();
 
-  const destroy = (productId) => e => {
-    deleteCategories(productId, user._id, token).then(data => {
-      if(data.error) {
-        console.log(data.error);
-      } else {
-        setValues({
-          ...values,
-          redirectToReferrer: true
-        })
-      }
-    })
-  }
-
-  const redirectUser = () => {
-    if(values.redirectToReferrer) {
-        return <Redirect to='/' />
-        }
-    }
-
-  const handleToggle = c => () => {
+  const handleToggle = (c) => () => {
     // return the first index or -1
-    const currentCategoryId = checked.indexOf(c)
-    const newCheckedCategoryId = [...checked]
+    const currentCategoryId = checked.indexOf(c);
+    const newCheckedCategoryId = [...checked];
     // if currently checked was not already in checked state > push
     // else pull/take off
-    if(currentCategoryId === -1) {
-      newCheckedCategoryId.push(c)
+    if (currentCategoryId === -1) {
+      newCheckedCategoryId.push(c);
     } else {
-      newCheckedCategoryId.splice(currentCategoryId, 1)
+      newCheckedCategoryId.splice(currentCategoryId, 1);
     }
     // console.log(newCheckedCategoryId);
     setChecked(newCheckedCategoryId);
-    handleFilters(newCheckedCategoryId)
-  }
+    handleFilters(newCheckedCategoryId);
+  };
 
-  return (
-    categories.map((c, i) => (
-      <li key={i} className="list-unstyled">
-        <input
+  return categories.map((c, i) => (
+    <li key={i} className="list-unstyled">
+      <input
         onChange={handleToggle(c._id)}
         value={checked.indexOf(c._id === -1)}
         type="checkbox"
         className="form-check-input"
-        />
-        <label className="form-check-label">{c.name}</label>
-      </li>
-    ))
-  )
-}
+      />
+      <label className="form-check-label">{c.name}</label>
+    </li>
+  ));
+};
 
-export default Checkbox
+export default Checkbox;
