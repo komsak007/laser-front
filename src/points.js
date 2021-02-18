@@ -44,10 +44,24 @@ const PointsLaser = () => {
   };
 
   useEffect(() => {
+    let line = []
+    let x99
+    let y99
     setInterval(() => {
-      axios.get(`${API}/laser`).then((response) => {
-        setPoints(response.data.point);
+      axios.get(`${API}/laser`).then((response, i) => {
+        line = []
+        response.data.point.map(p => {
+          // console.log(p);
+          x99 = p[0] * Math.cos(p[1]*(Math.PI/180)) * 50
+          y99 = p[0] * Math.sin(p[1]*(Math.PI/180)) * 50
+          // console.log(x99);
+          line.push([x99, y99])
+          // console.log(line)
+        })
+        // response.data.point.map(p => console.log(p[0]))
       });
+      setPoints(line);
+      // console.log(line)
       //   const checkSize = () => {
       //   setSize({
       //     width: window.innerWidth,

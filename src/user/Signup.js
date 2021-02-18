@@ -2,17 +2,19 @@ import React, {useState} from 'react'
 import {Link} from 'react-router-dom'
 import Layout from '../core/Layout'
 import {signup} from '../auth'
+import {toast} from 'react-toastify'
 
-const Signup = () => {
+const Signup = ({history}) => {
   const [values, setValues] = useState({
     name: '',
     email: '',
     password: '',
+    role: 1,
     error: '',
     success: false
   })
 
-  const {name, email, password, error, success} = values
+  const {name, email, password, role, error, success} = values
 
   const handleChange = name => event => {
     setValues({...values, error:false, [name]:event.target.value})
@@ -21,7 +23,7 @@ const Signup = () => {
   const clickSubmit = (event) => {
     event.preventDefault()
     setValues({ ...values, error: false });
-    signup({name, email, password})
+    signup({name, email, password, role})
     .then(data => {
       if(data.error) {
         setValues({...values, error: data.error, success: false})
@@ -35,6 +37,10 @@ const Signup = () => {
         })
       }
     })
+    toast.success("Add user success")
+    setTimeout(() => {
+      history.push('/admin/user')
+    },1000)
   }
 
   const signUpForm = () => (
@@ -53,20 +59,15 @@ const Signup = () => {
         <label className='text-muted'>Password</label>
         <input onChange={handleChange('password')} type='password' className='form-control' value={password} />
       </div>
+
+      <select onChange={handleChange("role")} className="form-control">
+        <option>Please select</option>
+        <option value="0">Technical</option>
+        <option value="2">Draft</option>
+      </select>
+
       <button onClick={clickSubmit} className='btn btn-primary'>Submit</button>
     </form>
-  )
-
-  const showError = () => (
-    <div className='alert alert-danger' style={{display: error ? '' : 'none'}}>
-      {error}
-    </div>
-  )
-
-  const showSuccess = () => (
-    <div className='alert alert-info' style={{display: success ? '' : 'none'}}>
-      New account is created. Please <Link to='/signin'>Signin</Link>
-    </div>
   )
 
 
@@ -77,8 +78,6 @@ const Signup = () => {
         description='Signup to Node React E-commerce App'
         className='container col-md-8 offset-md-2'
         >
-        {showSuccess()}
-        {showError()}
         {signUpForm()}
       </Layout>
     )

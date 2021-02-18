@@ -17,6 +17,8 @@ import PointsLaser from "./points";
 import Product from "./core/Product";
 import ManageProducts from "./admin/ManageProducts";
 import UpdateProduct from "./admin/UpdateProduct";
+import UpdateUser from "./admin/UpdateUser";
+import ManageUser from "./admin/ManageUser";
 
 const Routes = () => {
   return (
@@ -38,6 +40,8 @@ const Routes = () => {
           component={UpdateProduct}
         />
         <AdminRoute path="/admin/categories" exact component={ManageProducts} />
+        <AdminRoute path="/admin/user" exact component={ManageUser} />
+        <AdminRoute path="/admin/user/update/:userId" exact component={UpdateUser} />
       </Switch>
     </BrowserRouter>
   );

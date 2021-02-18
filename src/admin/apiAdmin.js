@@ -169,3 +169,37 @@ export const createLaser = async (product) => {
   // console.log(product);
   await axios.post(`${API}/product/laser`, product);
 };
+
+export const listUser = () => {
+  return fetch(`${API}/user/list`, {
+    method: "GET",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const deleteUser = (userId) => {
+  return fetch(`${API}/user/${userId}`, {
+    method: "DELETE",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const getUser = (userId) => {
+  return fetch(`${API}/user/${userId}`, {
+    method: "GET",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const updateUser = (userId, user) => {
+  axios.put(`${API}/user/${userId}`, user)
+};
