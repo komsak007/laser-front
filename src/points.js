@@ -6,7 +6,7 @@ import { Stage, Layer, Line, Rect, Text, Tag, Label } from "react-konva";
 import Menu from "./core/Menu";
 import { API } from "./config";
 import { toast } from "react-toastify";
-import { Affix, Button, Select, Checkbox } from "antd";
+import { Affix, Button, Checkbox } from "antd";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
@@ -15,33 +15,18 @@ const PointsLaser = () => {
   const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState([]);
   const [top] = useState(10);
-  const [polar, setPolar] = useState({ theta: "", radius: "" });
-  const [rectangular, setRectangular] = useState({ x: "", y: "" });
   const [points, setPoints] = useState([]);
   const [order, setOrder] = useState("");
-  const [mesurement, setMesurement] = useState([]);
-  const [stageX, setStageX] = useState(0);
+  const [stageX] = useState(0);
   const [stageY] = useState(0);
-  const [stageScale, setStageScale] = useState(1);
-  const [curMousePos, setCurMousePos] = useState([0, 0]);
-  const [isMouseOverStartPoint, setMouseOverStartPoint] = useState(false);
-  const [isFinished, setFinished] = useState(true);
+  const [stageScale] = useState(1);
+  const [curMousePos] = useState([0, 0]);
+  const [setMouseOverStartPoint] = useState(false);
+  const [isFinished] = useState(true);
   const [check, setCheck] = useState(false);
-  const [xypoint, setxypoint] = useState({ x1: "", y1: "", re: "" });
-  const [size] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  });
 
   const stageRef = useRef(null);
   const isDrawing = useRef(false);
-
-  const getMousePos = (stage) => {
-    return [
-      stage.getPointerPosition().x - 2000 / 2,
-      stage.getPointerPosition().y - 1500 / 2,
-    ];
-  };
 
   useEffect(() => {
     let line = []
@@ -108,28 +93,6 @@ const PointsLaser = () => {
     if (isFinished || points.length < 3) return;
     event.target.scale({ x: 2, y: 2 });
     setMouseOverStartPoint(true);
-  };
-
-  const handleMouseOutStartPoint = (event) => {
-    event.target.scale({ x: 1, y: 1 });
-    setMouseOverStartPoint(false);
-  };
-
-  const handleDragStartPoint = (event) => {
-    console.log("start", event);
-  };
-
-  const handleDragMovePoint = (event) => {
-    const index = event.target.index - 1;
-    console.log(event.target);
-    const pos = [event.target.attrs.x, event.target.attrs.y];
-    console.log("move", event);
-    console.log(pos);
-    setPoints([...points.slice(0, index), pos, ...points.slice(index + 1)]);
-  };
-
-  const handleDragEndPoint = (event) => {
-    console.log("end", event);
   };
 
   const flattenedPoints = points
@@ -295,7 +258,7 @@ const PointsLaser = () => {
                     ? {
                         hitStrokeWidth: 12,
                         onMouseOver: handleMouseOverStartPoint,
-                        onMouseOut: handleMouseOutStartPoint,
+
                       }
                     : null;
                 return (
@@ -308,10 +271,6 @@ const PointsLaser = () => {
                     fill="white"
                     stroke="black"
                     strokeWidth={2}
-                    onDragStart={handleDragStartPoint}
-                    onDragMove={handleDragMovePoint}
-                    onDragEnd={handleDragEndPoint}
-                    draggable
                     {...startPointAttr}
                   />
                 );

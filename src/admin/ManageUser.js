@@ -1,13 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import Layout from '../core/Layout'
-import {isAuthenticated} from '../auth'
-import {Link} from 'react-router-dom'
 import {listUser, deleteUser} from './apiAdmin'
 
 const ManageUser = ({history}) => {
   const [users, setUsers] = useState([])
-
-  const {user, token} = isAuthenticated()
 
   const loadProducts = () => {
     listUser().then(data => {

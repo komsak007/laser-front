@@ -1,5 +1,4 @@
 import React, {useState} from 'react'
-import {Link} from 'react-router-dom'
 import Layout from '../core/Layout'
 import {signup} from '../auth'
 import {toast} from 'react-toastify'
@@ -14,7 +13,7 @@ const Signup = ({history}) => {
     success: false
   })
 
-  const {name, email, password, role, error, success} = values
+  const {name, email, password, role} = values
 
   const handleChange = name => event => {
     setValues({...values, error:false, [name]:event.target.value})

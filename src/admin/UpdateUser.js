@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
-import { isAuthenticated } from "../auth";
-import { Link, Redirect } from "react-router-dom";
 import { getUser, updateUser } from "./apiAdmin";
 import {toast} from "react-toastify"
 

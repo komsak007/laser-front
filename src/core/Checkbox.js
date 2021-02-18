@@ -1,15 +1,7 @@
 import React, { useState } from "react";
-import { deleteCategories } from "../admin/apiAdmin";
-import { Redirect } from "react-router-dom";
-import { isAuthenticated } from "../auth";
 
 const Checkbox = ({ categories, handleFilters }) => {
   const [checked, setChecked] = useState([]);
-  const [values, setValues] = useState({
-    redirectToReferrer: false,
-  });
-
-  const { user, token } = isAuthenticated();
 
   const handleToggle = (c) => () => {
     // return the first index or -1

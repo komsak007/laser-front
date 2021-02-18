@@ -160,16 +160,10 @@ const Product = ({ match }) => {
           disabled
         />
         {check ? (
-<<<<<<< HEAD
           <span className='p-2'>Close Dxf: </span>
         ) : (
           <span className='p-2'>Open Dxf: </span>
-=======
-          <span className="p-2">Close Dxf: </span>
-        ) : (
-          <span className="p-2">Open Dxf: </span>
->>>>>>> 578238d28e1a4db7a12caff0571c48d8b06ad877
-        )}
+          )}
         <Checkbox onChange={(e) => setCheck(e.target.checked)} />
       </Affix>
       {check ? (
