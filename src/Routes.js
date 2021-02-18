@@ -1,27 +1,48 @@
-import React from "react";
+import React, {lazy, Suspense} from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import 'antd/dist/antd.css';
 
-import Signup from "./user/Signup";
-import Signin from "./user/Signin";
-import Home from "./core/Home";
-import PrivateRoute from "./auth/PrivateRoute";
-import Dashboard from "./user/UserDashboard";
-import AdminRoute from "./auth/AdminRoute";
-import AdminDashboard from "./user/AdminDashboard";
-import AddCategory from "./admin/AddCategory";
-import AddProduct from "./admin/AddProduct";
-import PointsLaser from "./points";
-import Product from "./core/Product";
-import ManageProducts from "./admin/ManageProducts";
-import UpdateProduct from "./admin/UpdateProduct";
-import UpdateUser from "./admin/UpdateUser";
-import ManageUser from "./admin/ManageUser";
+// import Signup from "./user/Signup";
+// import Signin from "./user/Signin";
+// import Home from "./core/Home";
+// import PrivateRoute from "./auth/PrivateRoute";
+// import Dashboard from "./user/UserDashboard";
+// import AdminRoute from "./auth/AdminRoute";
+// import AdminDashboard from "./user/AdminDashboard";
+// import AddCategory from "./admin/AddCategory";
+// import AddProduct from "./admin/AddProduct";
+// import PointsLaser from "./points";
+// import Product from "./core/Product";
+// import ManageProducts from "./admin/ManageProducts";
+// import UpdateProduct from "./admin/UpdateProduct";
+// import UpdateUser from "./admin/UpdateUser";
+// import ManageUser from "./admin/ManageUser";
+
+const Signup = lazy(() => import("./user/Signup"))
+const Signin = lazy(() => import("./user/Signin"));
+const Home = lazy(() => import("./core/Home"));
+const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
+const Dashboard = lazy(() => import("./user/UserDashboard"));
+const AdminRoute = lazy(() => import("./auth/AdminRoute"));
+const AdminDashboard = lazy(() => import("./user/AdminDashboard"));
+const AddCategory = lazy(() => import("./admin/AddCategory"));
+const AddProduct = lazy(() => import("./admin/AddProduct"));
+const PointsLaser = lazy(() => import("./points"));
+const Product = lazy(() => import("./core/Product"));
+const ManageProducts = lazy(() => import("./admin/ManageProducts"));
+const UpdateProduct = lazy(() => import("./admin/UpdateProduct"));
+const UpdateUser = lazy(() => import("./admin/UpdateUser"))
+const ManageUser = lazy(() => import("./admin/ManageUser"));
 
 const Routes = () => {
   return (
+    <Suspense fallback={
+        <div className='col text-center p-5'>
+          __ React Redux ECOMMERCE __
+        </div>
+      }>
     <BrowserRouter>
       <ToastContainer />
       <Switch>
@@ -44,6 +65,7 @@ const Routes = () => {
         <AdminRoute path="/admin/user/update/:userId" exact component={UpdateUser} />
       </Switch>
     </BrowserRouter>
+  </Suspense>
   );
 };
 
