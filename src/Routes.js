@@ -40,7 +40,7 @@ const Routes = () => {
   return (
     <Suspense fallback={
         <div className='col text-center p-5'>
-          __ React Redux ECOMMERCE __
+          __ LASER REACT __
         </div>
       }>
     <BrowserRouter>
