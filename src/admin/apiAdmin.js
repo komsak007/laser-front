@@ -20,23 +20,34 @@ export const createCategory = (userId, token, category) => {
     });
 };
 
-export const createProduct = (userId, token, product) => {
-  console.log(product);
-  return fetch(`${API}/product/create/${userId}`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: product,
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
+export const createProduct = async (userId, token, product, images) =>
+  axios.post(
+    `${API}/product/create/${userId}`,
+    { product, images },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+// export const createProduct = (userId, token, product) => {
+//   console.log(product);
+//   return fetch(`${API}/product/create/${userId}`, {
+//     method: "POST",
+//     headers: {
+//       Accept: "application/json",
+//       Authorization: `Bearer ${token}`,
+//     },
+//     body: product,
+//   })
+//     .then((response) => {
+//       return response.json();
+//     })
+//     .catch((err) => {
+//       console.log(err);
+//     });
+// };
 
 export const getCategories = () => {
   return fetch(`${API}/categories`, {
@@ -135,20 +146,46 @@ export const getProduct = (productId) => {
     .catch((err) => console.log(err));
 };
 
-export const updateProduct = (productId, userId, token, product) => {
-  return fetch(`${API}/product/${productId}/${userId}`, {
-    method: "PUT",
+// export const updateProduct = (productId, userId, token, product) => {
+//   return fetch(`${API}/product/${productId}/${userId}`, {
+//     method: "PUT",
+//     headers: {
+//       Accept: "application/json",
+//       Authorization: `Bearer ${token}`,
+//     },
+//     body: product,
+//   })
+//     .then((response) => {
+//       return response.json();
+//     })
+//     .catch((err) => console.log(err));
+// };
+
+export const updateProduct = async (
+  productId,
+  userId,
+  token,
+  product,
+  images
+) =>
+  await axios.put(`${API}/product/${productId}/${userId}`, product, {
     headers: {
       Accept: "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: product,
-  })
-    .then((response) => {
-      return response.json();
-    })
-    .catch((err) => console.log(err));
-};
+  });
+
+export const updateImages = async (productId, userId, token, images) =>
+  await axios.put(
+    `${API}/product/${productId}/image/${userId}`,
+    { images },
+    {
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
 export const deleteCategories = (categoryId, userId, token) => {
   return fetch(`${API}/category/${categoryId}/${userId}`, {
@@ -201,5 +238,5 @@ export const getUser = (userId) => {
 };
 
 export const updateUser = (userId, user) => {
-  axios.put(`${API}/user/${userId}`, user)
+  axios.put(`${API}/user/${userId}`, user);
 };

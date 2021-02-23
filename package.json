@@ -11,16 +11,20 @@
     "axios": "^0.21.1",
     "dotenv": "^8.2.0",
     "file-saver": "^2.0.2",
+    "jszip": "^3.6.0",
     "konva": "^7.1.4",
     "makerjs": "^0.17.0",
     "moment-timezone": "^0.5.31",
     "react": "^17.0.1",
     "react-blueprint-svg": "^0.9.3",
     "react-dom": "^17.0.1",
+    "react-image-file-resizer": "^0.4.0",
     "react-konva": "^17.0.0-0",
+    "react-responsive-carousel": "^3.2.11",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.4",
-    "react-toastify": "^6.2.0"
+    "react-toastify": "^6.2.0",
+    "save-as": "^0.1.8"
   },
   "scripts": {
     "start": "react-scripts start",

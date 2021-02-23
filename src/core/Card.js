@@ -79,10 +79,19 @@ const Card = ({
       <div className="card mb-3">
         <div className="card-header">Order: {product.order}</div>
         <div className="card-body">
+          {/* <img
+            src={images && images.length ? images[0].url : laptop}
+            style={{ height: "150px", objectFit: "cover" }}
+            className="p-2"
+          /> */}
           <ShowImage item={product} url="product" />
           <h5 className="text-muted my-3">ผู้รับผิดชอบ: {product.name}</h5>
           <p>สถานที่: {product.place}</p>
-          <p>{product.description ? product.description : "ไม่มีรายละเอียด"}</p>
+          <p>
+            {product.description
+              ? product.description.substring(0, 50)
+              : "ไม่มีรายละเอียด"}
+          </p>
           <div>
             <span className="black-9">
               วันที: {parseInt(product.createdAt.substring(8, 10))}-

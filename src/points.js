@@ -8,10 +8,14 @@ import { API } from "./config";
 import { toast } from "react-toastify";
 import { Affix, Button, Checkbox } from "antd";
 
+import { isAuthenticated } from "./auth";
+
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
 
-const PointsLaser = () => {
+const { user } = isAuthenticated();
+
+const PointsLaser = ({ history }) => {
   const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState([]);
   const [top] = useState(10);
@@ -29,20 +33,20 @@ const PointsLaser = () => {
   const isDrawing = useRef(false);
 
   useEffect(() => {
-    let line = []
-    let x99
-    let y99
+    let line = [];
+    let x99;
+    let y99;
     setInterval(() => {
       axios.get(`${API}/laser`).then((response, i) => {
-        line = []
-        response.data.point.map(p => {
+        line = [];
+        response.data.point.map((p) => {
           // console.log(p);
-          x99 = p[0] * Math.cos(p[1]*(Math.PI/180)) * 50
-          y99 = p[0] * Math.sin(p[1]*(Math.PI/180)) * 50
+          x99 = p[0] * Math.cos(p[1] * (Math.PI / 180)) * 50;
+          y99 = p[0] * Math.sin(p[1] * (Math.PI / 180)) * 50;
           // console.log(x99);
-          line.push([x99, y99])
+          line.push([x99, y99]);
           // console.log(line)
-        })
+        });
         // response.data.point.map(p => console.log(p[0]))
       });
       setPoints(line);
@@ -68,8 +72,6 @@ const PointsLaser = () => {
   };
 
   const handleMouseMove1 = (e) => {
-    // no drawing - skipping
-    // console.log(e.evt);
     if (!isDrawing.current) {
       return;
     }
@@ -112,8 +114,8 @@ const PointsLaser = () => {
       let dy = points[i + 1][1] - points[i][1];
       let x = points[i][0] + dx / 2;
       let y = points[i][1] + dy / 2;
-      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 42 * 0.0002645833;
-      // let l = (Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))*42);
+      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020021205;
+      // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
       if (dy === 0 && dx >= 0);
@@ -185,6 +187,7 @@ const PointsLaser = () => {
               setOrder(e.target.value);
             }}
             value={order}
+            placeholder="Order number"
           />
           <select
             value={tool}
@@ -258,7 +261,6 @@ const PointsLaser = () => {
                     ? {
                         hitStrokeWidth: 12,
                         onMouseOver: handleMouseOverStartPoint,
-
                       }
                     : null;
                 return (

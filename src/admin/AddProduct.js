@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { createProduct, getCategories } from "./apiAdmin";
+import FileUpload from "./FileUpload";
 
 const { user, token } = isAuthenticated();
 
@@ -13,21 +14,21 @@ const AddProduct = () => {
     place: "",
     categories: [],
     category: "",
-    photo: "",
-    loading: "",
+    images: [],
     error: "",
     createdProduct: "",
     redirectToProfile: false,
     formData: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const {
     name,
     order,
     description,
     place,
+    images,
     categories,
-    loading,
     error,
     createdProduct,
     formData,
@@ -49,17 +50,19 @@ const AddProduct = () => {
   }, []);
 
   const handleChange = (name) => (event) => {
-    const value = name === "photo" ? event.target.files[0] : event.target.value;
+    const value = event.target.value;
     formData.set(name, value);
     setValues({ ...values, error: "", createdProduct: "", [name]: value });
   };
 
   const clickSubmit = (event) => {
     event.preventDefault();
+    // formData.set("images", images);
+    // formData.set("images", images);
     formData.set("name", user.name);
     setValues({ ...values, error: "", loading: true });
 
-    createProduct(user._id, token, formData).then((data) => {
+    createProduct(user._id, token, values, images).then((data) => {
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -70,7 +73,7 @@ const AddProduct = () => {
           order: "",
           description: "",
           place: "",
-          photo: "",
+          images: "",
           loading: false,
           createdProduct: data.order,
         });
@@ -83,14 +86,13 @@ const AddProduct = () => {
     <form className="mb-3" onSubmit={clickSubmit}>
       <h4>Post Photo</h4>
       <div className="form-group">
-        <label className="btn btn-secondary">
-          <input
-            onChange={handleChange("photo")}
-            type="file"
-            name="photo"
-            accept="image/*"
+        <div className="p-3">
+          <FileUpload
+            values={values}
+            setValues={setValues}
+            setLoading={setLoading}
           />
-        </label>
+        </div>
       </div>
 
       <div className="form-group">

@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { Redirect } from "react-router-dom";
-import { getProduct, getCategories, updateProduct } from "./apiAdmin";
+import {
+  getProduct,
+  getCategories,
+  updateProduct,
+  updateImages,
+} from "./apiAdmin";
+import FileUpload from "./FileUpload";
 
 const UpdateProduct = ({ match }) => {
   const [values, setValues] = useState({
@@ -12,13 +18,14 @@ const UpdateProduct = ({ match }) => {
     place: "",
     categories: [],
     category: "",
-    photo: "",
-    loading: "",
+    images: "",
     error: "",
     createdProduct: "",
     redirectToProfile: false,
     formData: "",
   });
+
+  const [loading, setLoading] = useState(false);
 
   const { user, token } = isAuthenticated();
   const {
@@ -27,8 +34,8 @@ const UpdateProduct = ({ match }) => {
     description,
     place,
     categories,
-    loading,
     error,
+    images,
     createdProduct,
     redirectToProfile,
     formData,
@@ -47,6 +54,7 @@ const UpdateProduct = ({ match }) => {
             name: user.name,
             order: data.order,
             place: data.place,
+            images: data.images,
             description: data.description,
             formData: new FormData(),
           });
@@ -56,6 +64,7 @@ const UpdateProduct = ({ match }) => {
             name: data.name,
             order: data.order,
             place: data.place,
+            images: data.images,
             description: data.description,
             formData: new FormData(),
           });
@@ -90,15 +99,25 @@ const UpdateProduct = ({ match }) => {
 
   const clickSubmit = (event) => {
     event.preventDefault();
+    // console.log(images);
     setValues({ ...values, error: "", loading: true });
     if (name === "") {
       formData.set("name", user.name);
     } else {
       formData.set("name", user.name);
     }
+    // for (let i = 0; i < images.length; i++) {
+    //   formData.append("images", images[i]);
+    // }
+    updateImages(match.params.productId, user._id, token, images).then(
+      (res) => {
+        console.log(res);
+      }
+    );
 
     updateProduct(match.params.productId, user._id, token, formData).then(
       (data) => {
+        console.log(data);
         if (data.error) {
           setValues({ ...values, error: data.error });
         } else {
@@ -121,14 +140,13 @@ const UpdateProduct = ({ match }) => {
     <form className="mb-3" onSubmit={clickSubmit}>
       <h4>Post Photo</h4>
       <div className="form-group">
-        <label className="btn btn-secondary">
-          <input
-            onChange={handleChange("photo")}
-            type="file"
-            name="photo"
-            accept="image/*"
+        <div className="p-3">
+          <FileUpload
+            values={values}
+            setValues={setValues}
+            setLoading={setLoading}
           />
-        </label>
+        </div>
       </div>
 
       <div className="form-group">

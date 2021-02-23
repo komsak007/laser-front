@@ -7,25 +7,38 @@ import PolyLine from "../laser/PolyLine";
 import makerjs from "makerjs";
 import { toast } from "react-toastify";
 import { DownloadOutlined } from "@ant-design/icons";
-import { Affix, Select, Checkbox, Button } from "antd";
+import { Affix, Checkbox, Button, Card, Tabs } from "antd";
+import { Carousel } from "react-responsive-carousel";
+import { isAuthenticated } from "../auth";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
+import axios from "axios";
+import saveAs from "save-as";
+import JSZip from "jszip";
 
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
 
 const Product = ({ match }) => {
+  const [product, setProduct] = useState({});
   const [lines, setLines] = useState([]);
-  const [top, setTop] = useState(10);
+  const [top] = useState(10);
   const [points, setPoints] = useState([]);
   const [order, setOrder] = useState("");
-  const [stageX, setStageX] = useState(0);
+  const [stageX] = useState(0);
   const [stageY] = useState(0);
-  const [stageScale, setStageScale] = useState(1);
-  const [curMousePos, setCurMousePos] = useState([0, 0]);
+  const [stageScale] = useState(1);
+  const [curMousePos] = useState([0, 0]);
   const [isFinished] = useState(true);
-  const [check, setCheck] = useState(false);
+  const [checkDxf, setCheckDxf] = useState(false);
+  const [checkProduct, setCheckProduct] = useState(false);
+
+  const { images } = product;
+
+  const stageRef = useRef(null);
 
   useEffect(() => {
     loadProduct();
+    console.log(product);
   }, []);
 
   let model = new PolyLine({ points });
@@ -36,10 +49,11 @@ const Product = ({ match }) => {
 
   const loadProduct = () => {
     read(match.params.productId).then((res) => {
-      console.log(res);
+      // console.log(res);
       setPoints(res.point);
       setLines(res.lines);
       setOrder(res.order);
+      setProduct(res);
     });
     toast.success("Load data success");
     // console.log(match.params.productId);
@@ -94,9 +108,9 @@ const Product = ({ match }) => {
 
     //console.log(lpoint[lpoint.length - 1].direction);
 
-    return lpoint.map((point) => {
+    return lpoint.map((point, i) => {
       return (
-        <Label x={point.x} y={point.y}>
+        <Label key={i} x={point.x} y={point.y}>
           <Tag
             fill="black"
             pointerDirection={point.direction}
@@ -137,14 +151,110 @@ const Product = ({ match }) => {
     }
   };
 
+  const downloadChapter = () => {
+    var zip = new JSZip();
+    var count = 0;
+    images.forEach((file) => {
+      axios
+        .get(file.url, {
+          responseType: "blob",
+        })
+        .then((response) => {
+          // console.log(response.data);
+          zip.file(count + ".jpg", response.data, {
+            binary: true,
+          });
+
+          ++count;
+
+          const uri = stageRef.current.toDataURL();
+
+          let uriLength = uri.length + 1;
+
+          zip.file("Base" + ".jpg", uri.substr(22, uriLength), {
+            base64: true,
+          });
+
+          // zip.file("Base" + ".dxf", file, {
+          //   base64: true,
+          // });
+
+          if (count == images.length) {
+            zip
+              .generateAsync({
+                type: "blob",
+              })
+              .then(function (content) {
+                saveAs(content, product.order + ".zip");
+              });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    });
+  };
+
   return (
     <Fragment>
       <Menu />
+      <div>
+        <Checkbox onChange={(e) => setCheckProduct(e.target.checked)}>
+          View Image
+        </Checkbox>
+      </div>
+      {checkProduct && (
+        <button
+          className="btn-sm btn-warning ml-2 mt-2"
+          type="submit"
+          onClick={() => downloadChapter()}
+        >
+          Download Images
+        </button>
+      )}
+      {checkProduct && (
+        <div className="container-fluid">
+          <div className="row pt-4">
+            <div className="col-md-9">
+              {images && images.length ? (
+                <Carousel showArrows={true} autoPlay infiniteLoop>
+                  {images &&
+                    images.map((i) => (
+                      <img
+                        src={i.url}
+                        key={i.public_id}
+                        style={{ width: "fit", height: "fit" }}
+                      />
+                    ))}
+                </Carousel>
+              ) : (
+                <Card
+                  cover={
+                    <img
+                      src="https://www.allianceplast.com/wp-content/uploads/2017/11/no-image.png"
+                      className="mb-3 card-image"
+                    />
+                  }
+                ></Card>
+              )}
+            </div>
+
+            <div className="col-md-3">
+              <h1 className="bg-info p-3">ผู้รับผิดชอบ: {product.name}</h1>
+              <div className=" pt-1 pb-3">ออเดอร์: {product.order}</div>
+              <div className=" pt-1 pb-3">
+                รายละเอียด: {product.description}
+              </div>
+              <div className=" pt-1 pb-3">สถานที่: {product.place}</div>
+            </div>
+          </div>
+        </div>
+      )}
       <Affix offsetTop={top}>
-        <button className="btn btn-primary mr-2 mt-2" onClick={loadProduct}>
+        <button className="btn-sm btn-primary mr-2 mt-2" onClick={loadProduct}>
           Open Mark
         </button>
-        <button className="btn btn-danger mr-2 mt-2" onClick={clearMark}>
+        <button className="btn-sm btn-danger mr-2 mt-2" onClick={clearMark}>
           Close Mark
         </button>
         <span className="pl-2">Order:</span>
@@ -159,21 +269,22 @@ const Product = ({ match }) => {
           value={order}
           disabled
         />
-        {check ? (
-          <span className='p-2'>Close Dxf: </span>
+
+        {checkDxf ? (
+          <span className="p-2">Close Dxf: </span>
         ) : (
-          <span className='p-2'>Open Dxf: </span>
-          )}
-        <Checkbox onChange={(e) => setCheck(e.target.checked)} />
+          <span className="p-2">Open Dxf: </span>
+        )}
+        <Checkbox onChange={(e) => setCheckDxf(e.target.checked)} />
       </Affix>
-      {check ? (
+      {checkDxf ? (
         <>
           <Button
             type="Dashed"
             className="mt-3 ml-2"
             shape="round"
             icon={<DownloadOutlined />}
-            onClick={() => download(file, "Output.dxf", "dxf")}
+            onClick={() => download(file, `${product.order}.dxf`, "dxf")}
           >
             Download
           </Button>
@@ -189,6 +300,7 @@ const Product = ({ match }) => {
           scaleY={stageScale}
           x={stageX}
           y={stageY}
+          ref={stageRef}
         >
           <Layer>
             {lines.map((line, i) => (
