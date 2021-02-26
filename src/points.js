@@ -41,8 +41,11 @@ const PointsLaser = ({ history }) => {
         line = [];
         response.data.point.map((p) => {
           // console.log(p);
-          x99 = p[0] * Math.cos(p[1] * (Math.PI / 180)) * 50;
-          y99 = p[0] * Math.sin(p[1] * (Math.PI / 180)) * 50;
+          x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180)) * 50;
+          y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180)) * 50;
+
+          // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
+          // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
           // console.log(x99);
           line.push([x99, y99]);
           // console.log(line)
@@ -114,7 +117,8 @@ const PointsLaser = ({ history }) => {
       let dy = points[i + 1][1] - points[i][1];
       let x = points[i][0] + dx / 2;
       let y = points[i][1] + dy / 2;
-      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020021205;
+      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020022205;
+      // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.018014184;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
@@ -147,16 +151,16 @@ const PointsLaser = ({ history }) => {
           <Tag
             fill="black"
             pointerDirection={point.direction}
-            pointerWidth={10}
-            pointerHeight={10}
+            pointerWidth={8}
+            pointerHeight={8}
             lineJoin="round"
             shadowColor="black"
           />
           <Text
             text={point.l.toFixed(3) + " m "}
             fontFamily="Calibri"
-            fontSize={18}
-            padding={5}
+            fontSize={10}
+            padding={4}
             fill="white"
           />
         </Label>
