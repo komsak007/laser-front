@@ -41,8 +41,8 @@ const PointsLaser = ({ history }) => {
         line = [];
         response.data.point.map((p) => {
           // console.log(p);
-          x99 = (p[0] + 0.032615) * Math.cos(p[1] * (Math.PI / 180)) * 50;
-          y99 = (p[0] + 0.032615) * Math.sin(p[1] * (Math.PI / 180)) * 50;
+          x99 = (p[0] + 0.0273575) * Math.cos(p[1] * (Math.PI / 180)) * 50;
+          y99 = (p[0] + 0.0273575) * Math.sin(p[1] * (Math.PI / 180)) * 50;
 
           // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
           // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
@@ -117,8 +117,8 @@ const PointsLaser = ({ history }) => {
       let dy = points[i + 1][1] - points[i][1];
       let x = points[i][0] + dx / 2;
       let y = points[i][1] + dy / 2;
-      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.0200001898;
-      // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020022205; // ดีที่สุด
+      // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.0200251898;
+      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020022205; // ดีที่สุด
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.018014184;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
