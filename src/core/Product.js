@@ -23,6 +23,7 @@ const Product = ({ match }) => {
   const [lines, setLines] = useState([]);
   const [top] = useState(10);
   const [points, setPoints] = useState([]);
+  const [curves, setCurves] = useState([]);
   const [order, setOrder] = useState("");
   const [stageX] = useState(0);
   const [stageY] = useState(0);
@@ -38,10 +39,27 @@ const Product = ({ match }) => {
 
   useEffect(() => {
     loadProduct();
-    console.log(product);
+    console.log(pointFinal);
   }, []);
 
-  let model = new PolyLine({ points });
+  let xFinal, yFinal;
+  let pointFinal = [];
+  points.map((p) => {
+    xFinal = p[0] / 6.56734569;
+    yFinal = p[1] / 6.56734569;
+    pointFinal.push([xFinal, yFinal]);
+  });
+
+  let xCurveFinal,
+    yCurveFinal,
+    curveFinal = [];
+  curves.map((p) => {
+    xCurveFinal = p[0] / 6.56734569;
+    yCurveFinal = p[1] / 6.56734569;
+    curveFinal.push([xCurveFinal, yCurveFinal]);
+  });
+
+  let model = new PolyLine({ points, curves });
 
   //export DXF
   const filename = "Save DXF";
@@ -51,6 +69,7 @@ const Product = ({ match }) => {
     read(match.params.productId).then((res) => {
       // console.log(res);
       setPoints(res.point);
+      setCurves(res.curve);
       setLines(res.lines);
       setOrder(res.order);
       setProduct(res);
@@ -64,7 +83,11 @@ const Product = ({ match }) => {
     toast.error("Clear mark");
   };
 
-  const flattenedPoints = points
+  const flattenedPoints = pointFinal
+    .concat(isFinished ? [] : curMousePos)
+    .reduce((a, b) => a.concat(b), []);
+
+  const flattenedCurves = curveFinal
     .concat(isFinished ? [] : curMousePos)
     .reduce((a, b) => a.concat(b), []);
 
@@ -81,7 +104,7 @@ const Product = ({ match }) => {
       let dy = points[i + 1][1] - points[i][1];
       let x = points[i][0] + dx / 2;
       let y = points[i][1] + dy / 2;
-      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 42 * 0.0002645833;
+      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005;
       // let l = (Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))*42);
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
@@ -149,6 +172,9 @@ const Product = ({ match }) => {
         window.URL.revokeObjectURL(url);
       }, 0);
     }
+
+    // console.log(points);
+    // console.log(pointFinal);
   };
 
   const downloadChapter = () => {
@@ -288,7 +314,7 @@ const Product = ({ match }) => {
           >
             Download
           </Button>
-          <BluePrint points={points} />
+          <BluePrint points={points} curves={curves} />
         </>
       ) : (
         <Stage
@@ -321,7 +347,7 @@ const Product = ({ match }) => {
           </Layer>
 
           <Layer width={2000} height={1500}>
-            {points.length >= 2 && textLabel(points)}
+            {pointFinal.length >= 2 && textLabel(pointFinal)}
 
             <Line
               points={flattenedPoints}
@@ -329,7 +355,7 @@ const Product = ({ match }) => {
               strokeWidth={5}
               // closed={isFinished}
             />
-            {points.map((point, index) => {
+            {pointFinal.map((point, index) => {
               const width = 10;
               const x = point[0] - width / 2;
               const y = point[1] - width / 2;
@@ -353,6 +379,25 @@ const Product = ({ match }) => {
                   {...startPointAttr}
                 />
               );
+            })}
+
+            <Line
+              points={flattenedCurves}
+              stroke="black"
+              strokeWidth={5}
+              // closed={isFinished}
+            />
+
+            {curveFinal.map((point, index) => {
+              const width = 10;
+              const x = point[0] - width / 2;
+              const y = point[1] - width / 2;
+              const startPointAttr =
+                index === 0
+                  ? {
+                      hitStrokeWidth: 12,
+                    }
+                  : null;
             })}
           </Layer>
         </Stage>

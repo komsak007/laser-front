@@ -1,25 +1,25 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
-import { getProducts, deleteProduct } from "./apiAdmin";
+import { getCategories, deleteCategories } from "./apiAdmin";
 
 const ManageProducts = () => {
-  const [products, setProducts] = useState([]);
+  const [categories, setCategories] = useState([]);
 
   const { user, token } = isAuthenticated();
 
   const loadProducts = () => {
-    getProducts().then((data) => {
+    getCategories().then((data) => {
       if (data.error) {
         console.log(data.error);
       } else {
-        setProducts(data);
+        setCategories(data);
       }
     });
   };
 
-  const destroy = (productId) => (e) => {
-    deleteProduct(productId, user._id, token).then((data) => {
+  const destroy = (categoryId) => (e) => {
+    deleteCategories(categoryId, user._id, token).then((data) => {
       if (data.error) {
         console.log(data.error);
       } else {
@@ -40,17 +40,17 @@ const ManageProducts = () => {
     >
       <div className="row">
         <div className="col-12">
-          <h2 className="text-center">Total {products.length} products</h2>
+          <h2 className="text-center">Total {categories.length} categories</h2>
           <hr />
           <ul className="list-group">
-            {products.map((p, i) => (
+            {categories.map((c, i) => (
               <li
                 key={i}
                 className="list-group-item d-flex justify-content-between align-items-center"
               >
-                <strong>{p.order}</strong>
+                <strong>{c.name}</strong>
                 <span
-                  onClick={destroy(p._id)}
+                  onClick={destroy(c._id)}
                   className="badge badge-danger badge-pill"
                   style={{ cursor: "pointer" }}
                 >

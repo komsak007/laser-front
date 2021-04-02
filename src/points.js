@@ -20,6 +20,7 @@ const PointsLaser = ({ history }) => {
   const [lines, setLines] = useState([]);
   const [top] = useState(10);
   const [points, setPoints] = useState([]);
+  const [curves, setCurves] = useState([]);
   const [order, setOrder] = useState("");
   const [stageX] = useState(0);
   const [stageY] = useState(0);
@@ -34,6 +35,8 @@ const PointsLaser = ({ history }) => {
 
   useEffect(() => {
     let line = [];
+    let curvePoint = [];
+    let xCurve, yCurve;
     let x99;
     let y99;
     setInterval(() => {
@@ -41,9 +44,16 @@ const PointsLaser = ({ history }) => {
         line = [];
         response.data.point.map((p) => {
           // console.log(p);
-          x99 = (p[0] + 0.0273575) * Math.cos(p[1] * (Math.PI / 180)) * 50;
-          y99 = (p[0] + 0.0273575) * Math.sin(p[1] * (Math.PI / 180)) * 50;
-
+          x99 =
+            (p[0] + 0.0273575) *
+            Math.cos(p[1] * (Math.PI / 180)) *
+            150 *
+            6.56734569;
+          y99 =
+            (p[0] + 0.0273575) *
+            Math.sin(p[1] * (Math.PI / 180)) *
+            150 *
+            6.56734569;
           // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
           // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
           // console.log(x99);
@@ -52,8 +62,34 @@ const PointsLaser = ({ history }) => {
         });
         // response.data.point.map(p => console.log(p[0]))
       });
+
+      axios.get(`${API}/curve`).then((response, i) => {
+        curvePoint = [];
+        response.data.curve.map((p) => {
+          // console.log(p);
+          xCurve =
+            (p[0] + 0.0273575) *
+            Math.cos(p[1] * (Math.PI / 180)) *
+            150 *
+            6.56734569;
+          yCurve =
+            (p[0] + 0.0273575) *
+            Math.sin(p[1] * (Math.PI / 180)) *
+            150 *
+            6.56734569;
+
+          // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
+          // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
+          // console.log(x99);
+          curvePoint.push([xCurve, yCurve]);
+          // console.log(line)
+        });
+      });
+
+      setCurves(curvePoint);
       setPoints(line);
-      // console.log(line)
+
+      // console.log(curvePoint);
       //   const checkSize = () => {
       //   setSize({
       //     width: window.innerWidth,
@@ -67,6 +103,23 @@ const PointsLaser = ({ history }) => {
 
     window.scrollTo(350, 700);
   }, []);
+
+  let xFinal, yFinal;
+  let pointFinal = [];
+  points.map((p) => {
+    xFinal = p[0] / 6.56734569;
+    yFinal = p[1] / 6.56734569;
+    pointFinal.push([xFinal, yFinal]);
+  });
+
+  let xCurveFinal,
+    yCurveFinal,
+    curveFinal = [];
+  curves.map((p) => {
+    xCurveFinal = p[0] / 6.56734569;
+    yCurveFinal = p[1] / 6.56734569;
+    curveFinal.push([xCurveFinal, yCurveFinal]);
+  });
 
   const handleMouseDown = (e) => {
     isDrawing.current = true;
@@ -100,7 +153,11 @@ const PointsLaser = ({ history }) => {
     setMouseOverStartPoint(true);
   };
 
-  const flattenedPoints = points
+  const flattenedPoints = pointFinal
+    .concat(isFinished ? [] : curMousePos)
+    .reduce((a, b) => a.concat(b), []);
+
+  const flattenedCurves = curveFinal
     .concat(isFinished ? [] : curMousePos)
     .reduce((a, b) => a.concat(b), []);
 
@@ -118,8 +175,9 @@ const PointsLaser = ({ history }) => {
       let x = points[i][0] + dx / 2;
       let y = points[i][1] + dy / 2;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.0200251898;
-      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020022205; // ดีที่สุด
+      // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020022205; // ดีที่สุด
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.018014184;
+      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
@@ -170,7 +228,7 @@ const PointsLaser = ({ history }) => {
   };
 
   const handleExport = () => {
-    createLaser({ points, order, lines }).then(() =>
+    createLaser({ points, order, lines, curves }).then(() =>
       toast.success("Save data to database")
     );
   };
@@ -211,7 +269,7 @@ const PointsLaser = ({ history }) => {
           <Checkbox onChange={(e) => setCheck(e.target.checked)} />
         </Affix>
         {check ? (
-          <BluePrint points={points} />
+          <BluePrint points={points} curves={curves} />
         ) : (
           <Stage
             width={2000}
@@ -249,7 +307,7 @@ const PointsLaser = ({ history }) => {
             </Layer>
 
             <Layer width={2000} height={1500}>
-              {points.length >= 2 && textLabel(points)}
+              {pointFinal.length >= 2 && textLabel(pointFinal)}
 
               <Line
                 points={flattenedPoints}
@@ -257,7 +315,7 @@ const PointsLaser = ({ history }) => {
                 strokeWidth={5}
                 // closed={isFinished}
               />
-              {points.map((point, index) => {
+              {pointFinal.map((point, index) => {
                 const width = 10;
                 const x = point[0] - width / 2;
                 const y = point[1] - width / 2;
@@ -281,6 +339,26 @@ const PointsLaser = ({ history }) => {
                     {...startPointAttr}
                   />
                 );
+              })}
+
+              <Line
+                points={flattenedCurves}
+                stroke="black"
+                strokeWidth={5}
+                // closed={isFinished}
+              />
+
+              {curveFinal.map((point, index) => {
+                const width = 10;
+                const x = point[0] - width / 2;
+                const y = point[1] - width / 2;
+                const startPointAttr =
+                  index === 0
+                    ? {
+                        hitStrokeWidth: 12,
+                        onMouseOver: handleMouseOverStartPoint,
+                      }
+                    : null;
               })}
             </Layer>
           </Stage>

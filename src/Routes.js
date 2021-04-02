@@ -31,6 +31,7 @@ const AddCategory = lazy(() => import("./admin/AddCategory"));
 const AddProduct = lazy(() => import("./admin/AddProduct"));
 const PointsLaser = lazy(() => import("./points"));
 const Product = lazy(() => import("./core/Product"));
+const ManageCategories = lazy(() => import("./admin/ManageCategories"));
 const ManageProducts = lazy(() => import("./admin/ManageProducts"));
 const UpdateProduct = lazy(() => import("./admin/UpdateProduct"));
 const UpdateUser = lazy(() => import("./admin/UpdateUser"));
@@ -81,8 +82,11 @@ const Routes = () => {
           <AdminRoute
             path="/admin/categories"
             exact
-            component={ManageProducts}
+            component={ManageCategories}
           />
+
+          <AdminRoute path="/admin/products" exact component={ManageProducts} />
+
           <AdminRoute path="/admin/user" exact component={ManageUser} />
 
           <AdminRoute
