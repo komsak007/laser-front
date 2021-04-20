@@ -290,8 +290,8 @@ const PointsLaser = ({ history }) => {
               <Layer>
                 {lines.map((line, i) => (
                   <Line
-                    x={-window.innerWidth / 2}
-                    y={-window.innerHeight / 2}
+                    x={-(window.innerWidth - 250) / 2}
+                    y={-(window.innerHeight - 250) / 2}
                     key={i}
                     points={line.points}
                     stroke="#df4b26"
