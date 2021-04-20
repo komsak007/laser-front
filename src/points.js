@@ -100,8 +100,6 @@ const PointsLaser = ({ history }) => {
       // window.addEventListener("resize", checkSize);
       // return () => window.removeEventListener("resize", checkSize)
     }, 3000);
-
-    window.scrollTo(350, 700);
   }, []);
 
   let xFinal, yFinal;
@@ -271,97 +269,99 @@ const PointsLaser = ({ history }) => {
         {check ? (
           <BluePrint points={points} curves={curves} />
         ) : (
-          <Stage
-            width={2000}
-            height={1500}
-            offsetX={-2000 / 2}
-            offsetY={-1500 / 2}
-            scaleX={stageScale}
-            scaleY={stageScale}
-            x={stageX}
-            y={stageY}
-            ontouchstart={handleMouseDown}
-            onMouseDown={handleMouseDown}
-            ontouchmove={handleMouseMove1}
-            onMousemove={handleMouseMove1}
-            ontouchend={handleMouseUp}
-            onMouseup={handleMouseUp}
-            ref={stageRef}
-          >
-            <Layer>
-              {lines.map((line, i) => (
-                <Line
-                  x={-1000}
-                  y={-750}
-                  key={i}
-                  points={line.points}
-                  stroke="#df4b26"
-                  strokeWidth={5}
-                  tension={0.5}
-                  lineCap="round"
-                  globalCompositeOperation={
-                    line.tool === "eraser" ? "destination-out" : "source-over"
-                  }
-                />
-              ))}
-            </Layer>
-
-            <Layer width={2000} height={1500}>
-              {pointFinal.length >= 2 && textLabel(pointFinal)}
-
-              <Line
-                points={flattenedPoints}
-                stroke="black"
-                strokeWidth={5}
-                // closed={isFinished}
-              />
-              {pointFinal.map((point, index) => {
-                const width = 10;
-                const x = point[0] - width / 2;
-                const y = point[1] - width / 2;
-                const startPointAttr =
-                  index === 0
-                    ? {
-                        hitStrokeWidth: 12,
-                        onMouseOver: handleMouseOverStartPoint,
-                      }
-                    : null;
-                return (
-                  <Rect
-                    key={index}
-                    x={x}
-                    y={y}
-                    width={width / 1.2}
-                    height={width / 1.2}
-                    fill="white"
-                    stroke="black"
-                    strokeWidth={2}
-                    {...startPointAttr}
+          <div style={{ position: "fixed" }}>
+            <Stage
+              width={window.innerWidth}
+              height={window.innerHeight}
+              offsetX={-(window.innerWidth - 250) / 2}
+              offsetY={-(window.innerHeight - 250) / 2}
+              scaleX={stageScale}
+              scaleY={stageScale}
+              x={stageX}
+              y={stageY}
+              ontouchstart={handleMouseDown}
+              onMouseDown={handleMouseDown}
+              ontouchmove={handleMouseMove1}
+              onMousemove={handleMouseMove1}
+              ontouchend={handleMouseUp}
+              onMouseup={handleMouseUp}
+              ref={stageRef}
+            >
+              <Layer>
+                {lines.map((line, i) => (
+                  <Line
+                    x={-window.innerWidth / 2}
+                    y={-window.innerHeight / 2}
+                    key={i}
+                    points={line.points}
+                    stroke="#df4b26"
+                    strokeWidth={5}
+                    tension={0.5}
+                    lineCap="round"
+                    globalCompositeOperation={
+                      line.tool === "eraser" ? "destination-out" : "source-over"
+                    }
                   />
-                );
-              })}
+                ))}
+              </Layer>
 
-              <Line
-                points={flattenedCurves}
-                stroke="black"
-                strokeWidth={5}
-                // closed={isFinished}
-              />
+              <Layer width={window.innerWidth} height={window.innerHeight}>
+                {pointFinal.length >= 2 && textLabel(pointFinal)}
 
-              {curveFinal.map((point, index) => {
-                const width = 10;
-                const x = point[0] - width / 2;
-                const y = point[1] - width / 2;
-                const startPointAttr =
-                  index === 0
-                    ? {
-                        hitStrokeWidth: 12,
-                        onMouseOver: handleMouseOverStartPoint,
-                      }
-                    : null;
-              })}
-            </Layer>
-          </Stage>
+                <Line
+                  points={flattenedPoints}
+                  stroke="black"
+                  strokeWidth={5}
+                  // closed={isFinished}
+                />
+                {pointFinal.map((point, index) => {
+                  const width = 10;
+                  const x = point[0] - width / 2;
+                  const y = point[1] - width / 2;
+                  const startPointAttr =
+                    index === 0
+                      ? {
+                          hitStrokeWidth: 12,
+                          onMouseOver: handleMouseOverStartPoint,
+                        }
+                      : null;
+                  return (
+                    <Rect
+                      key={index}
+                      x={x}
+                      y={y}
+                      width={width / 1.2}
+                      height={width / 1.2}
+                      fill="white"
+                      stroke="black"
+                      strokeWidth={2}
+                      {...startPointAttr}
+                    />
+                  );
+                })}
+
+                <Line
+                  points={flattenedCurves}
+                  stroke="black"
+                  strokeWidth={5}
+                  // closed={isFinished}
+                />
+
+                {curveFinal.map((point, index) => {
+                  const width = 10;
+                  const x = point[0] - width / 2;
+                  const y = point[1] - width / 2;
+                  const startPointAttr =
+                    index === 0
+                      ? {
+                          hitStrokeWidth: 12,
+                          onMouseOver: handleMouseOverStartPoint,
+                        }
+                      : null;
+                })}
+              </Layer>
+            </Stage>
+          </div>
         )}
       </Fragment>
     </>
