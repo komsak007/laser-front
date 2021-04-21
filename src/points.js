@@ -8,13 +8,6 @@ import { API } from "./config";
 import { toast } from "react-toastify";
 import { Affix, Button, Checkbox } from "antd";
 
-import { isAuthenticated } from "./auth";
-
-var SCENE_BASE_WIDTH = window.innerWidth;
-var SCENE_BASE_HEIGHT = window.innerHeight;
-
-const { user } = isAuthenticated();
-
 const PointsLaser = ({ history }) => {
   const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState([]);
@@ -99,7 +92,7 @@ const PointsLaser = ({ history }) => {
       //
       // window.addEventListener("resize", checkSize);
       // return () => window.removeEventListener("resize", checkSize)
-    }, 3000);
+    }, 5000);
   }, []);
 
   let xFinal, yFinal;
@@ -138,7 +131,7 @@ const PointsLaser = ({ history }) => {
     // replace last
     lines.splice(lines.length - 1, 1, lastLine);
     setLines(lines.concat());
-    console.log(lines);
+    // console.log(lines);
   };
 
   const handleMouseUp = () => {
@@ -158,11 +151,6 @@ const PointsLaser = ({ history }) => {
   const flattenedCurves = curveFinal
     .concat(isFinished ? [] : curMousePos)
     .reduce((a, b) => a.concat(b), []);
-
-  const scale = Math.min(
-    window.innerWidth / SCENE_BASE_WIDTH,
-    window.innerHeight / SCENE_BASE_HEIGHT
-  );
 
   const textLabel = (points) => {
     let lpoint = [];
@@ -243,6 +231,7 @@ const PointsLaser = ({ history }) => {
           <input
             type="text"
             name="name"
+            required
             className="md-3 ml-1 mr-3"
             onChange={(e) => {
               setOrder(e.target.value);
@@ -349,15 +338,6 @@ const PointsLaser = ({ history }) => {
 
                 {curveFinal.map((point, index) => {
                   const width = 10;
-                  const x = point[0] - width / 2;
-                  const y = point[1] - width / 2;
-                  const startPointAttr =
-                    index === 0
-                      ? {
-                          hitStrokeWidth: 12,
-                          onMouseOver: handleMouseOverStartPoint,
-                        }
-                      : null;
                 })}
               </Layer>
             </Stage>
