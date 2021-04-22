@@ -96,20 +96,130 @@ const PointsLaser = ({ history }) => {
   }, []);
 
   let xFinal, yFinal;
+  let overX = 0,
+    overY = 0,
+    temp = 0;
   let pointFinal = [];
+  let overPoint = [];
   points.map((p) => {
     xFinal = p[0] / 6.56734569;
     yFinal = p[1] / 6.56734569;
     pointFinal.push([xFinal, yFinal]);
+    // console.log(pointFinal);
+
+    for (let i = 0; i < pointFinal.length; i++) {
+      for (let j = 0; j < 2; j++) {
+        // console.log(pointFinal[i][j]);
+        if (
+          pointFinal[i][j] > window.innerWidth / 2 ||
+          (pointFinal[i][j] < 0 && pointFinal[i][j] < -(window.innerWidth / 2))
+        ) {
+          // if (pointFinal[i][j] < 0) {
+          //   temp = pointFinal[i][j] / -(window.innerWidth / 2);
+          //   if (temp > overX) {
+          //     overX = temp.toFixed(1);
+          //     overY = overX;
+          //   }
+          // } else {
+          //   temp = pointFinal[i][j] / window.innerHeight / 2;
+          //   if (temp > overY) {
+          //     overY = temp.toFixed(1);
+          //     overX = overY;
+          //   }
+          // }
+          overX = 1;
+        }
+      }
+    }
+    // console.log(overX);
+
+    // if (overX >= 0 || overX == 1 || overY >= 0 || overY == 1) {
+    //   overX = 1.5;
+    //   overY = 1.5;
+    // }
+
+    if (overX > 0 || overY > 0) {
+      overPoint = pointFinal;
+      pointFinal = [];
+
+      overPoint.map((p1) => {
+        xFinal = p1[0] / 2;
+        yFinal = p1[1] / 2;
+        pointFinal.push([xFinal, yFinal]);
+      });
+    } else {
+      overPoint.map((p1) => {
+        xFinal = p1[0] / 2;
+        yFinal = p1[1] / 2;
+        pointFinal.push([xFinal, yFinal]);
+      });
+    }
   });
 
-  let xCurveFinal,
-    yCurveFinal,
-    curveFinal = [];
+  let xCurveFinal, yCurveFinal;
+  let curveFinal = [],
+    curveOver = [];
+  let overCurveX = 0,
+    overCurveY = 0,
+    tempCurve = 0;
   curves.map((p) => {
     xCurveFinal = p[0] / 6.56734569;
     yCurveFinal = p[1] / 6.56734569;
     curveFinal.push([xCurveFinal, yCurveFinal]);
+
+    for (let i = 0; i < curveFinal.length; i++) {
+      for (let j = 0; j < 2; j++) {
+        // console.log(curveFinal[i][j]);
+        if (
+          curveFinal[i][j] > window.innerWidth / 2 ||
+          (curveFinal[i][j] < 0 && curveFinal[i][j] < -(window.innerWidth / 2))
+        ) {
+          // if (curveFinal[i][j] < 0) {
+          //   tempCurve = curveFinal[i][j] / -(window.innerWidth / 2);
+          //   if (tempCurve > overCurveX) {
+          //     overCurveX = tempCurve.toFixed(0);
+          //     overCurveY = overCurveX;
+          //   }
+          // } else {
+          //   tempCurve = curveFinal[i][j] / window.innerHeight / 2;
+          //   if (tempCurve > overCurveY) {
+          //     overCurveY = tempCurve.toFixed(0);
+          //     overCurveX = overCurveY;
+          //   }
+          // }
+          // console.log(curveFinal[i][j]);
+          overCurveX = 1;
+        }
+      }
+    }
+    // console.log(overCurveX);
+
+    // if (
+    //   overCurveX >= 0 ||
+    //   overCurveX == 1 ||
+    //   overCurveY >= 0 ||
+    //   overCurveY == 1
+    // ) {
+    //   overCurveX = 1.5;
+    //   overCurveY = 1.5;
+    // }
+
+    if (overCurveX > 0 || overCurveY > 0) {
+      curveOver = curveFinal;
+      curveFinal = [];
+
+      curveOver.map((p1) => {
+        xFinal = p1[0] / 2;
+        yFinal = p1[1] / 2;
+        curveFinal.push([xFinal, yFinal]);
+      });
+    } else {
+      curveOver.map((p1) => {
+        xFinal = p1[0] / 2;
+        yFinal = p1[1] / 2;
+        curveFinal.push([xFinal, yFinal]);
+      });
+    }
   });
 
   const handleMouseDown = (e) => {
