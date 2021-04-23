@@ -101,6 +101,7 @@ const PointsLaser = ({ history }) => {
     temp = 0;
   let pointFinal = [];
   let overPoint = [];
+  let calPoint = 1;
   points.map((p) => {
     xFinal = p[0] / 6.56734569;
     yFinal = p[1] / 6.56734569;
@@ -108,49 +109,57 @@ const PointsLaser = ({ history }) => {
     // console.log(pointFinal);
 
     for (let i = 0; i < pointFinal.length; i++) {
-      for (let j = 0; j < 2; j++) {
-        // console.log(pointFinal[i][j]);
-        if (
-          pointFinal[i][j] > window.innerWidth / 2 ||
-          (pointFinal[i][j] < 0 && pointFinal[i][j] < -(window.innerWidth / 2))
-        ) {
-          // if (pointFinal[i][j] < 0) {
-          //   temp = pointFinal[i][j] / -(window.innerWidth / 2);
-          //   if (temp > overX) {
-          //     overX = temp.toFixed(1);
-          //     overY = overX;
-          //   }
-          // } else {
-          //   temp = pointFinal[i][j] / window.innerHeight / 2;
-          //   if (temp > overY) {
-          //     overY = temp.toFixed(1);
-          //     overX = overY;
-          //   }
-          // }
-          overX = 1;
+      // console.log(pointFinal[i][j]);
+      calPoint = 1;
+      if (
+        pointFinal[i][0] > window.innerWidth / 2 ||
+        pointFinal[i][0] + window.innerWidth / 2 < 0
+      ) {
+        // overX = 1;
+        if (pointFinal[i][0] < 0) {
+          temp = pointFinal[i][0] / -(window.innerWidth / 2);
+          if (temp > overX) {
+            overX = temp;
+            overY = overX;
+          }
+        } else {
+          temp = pointFinal[i][0] / window.innerWidth / 2;
+          if (temp > overX) {
+            overX = temp;
+            overY = overX;
+          }
         }
       }
+
+      if (
+        pointFinal[i][1] > window.innerHeight / 2 ||
+        pointFinal[i][1] + window.innerHeight / 2 < 0
+      ) {
+        // overY = 1;
+      }
     }
-    // console.log(overX);
+    console.log("overX = ", overX, "overY = ", overY);
 
-    // if (overX >= 0 || overX == 1 || overY >= 0 || overY == 1) {
-    //   overX = 1.5;
-    //   overY = 1.5;
-    // }
+    calPoint = 1;
+    if (overX >= 0.41 || overY >= 0.41) {
+      calPoint = 2;
+    }
 
-    if (overX > 0 || overY > 0) {
+    if (calPoint == 2) {
       overPoint = pointFinal;
       pointFinal = [];
 
+      // calPoint = 1.5;
+
       overPoint.map((p1) => {
-        xFinal = p1[0] / 2;
-        yFinal = p1[1] / 2;
+        xFinal = p1[0] / calPoint;
+        yFinal = p1[1] / calPoint;
         pointFinal.push([xFinal, yFinal]);
       });
     } else {
       overPoint.map((p1) => {
-        xFinal = p1[0] / 2;
-        yFinal = p1[1] / 2;
+        xFinal = p1[0] / calPoint;
+        yFinal = p1[1] / calPoint;
         pointFinal.push([xFinal, yFinal]);
       });
     }
@@ -168,55 +177,56 @@ const PointsLaser = ({ history }) => {
     curveFinal.push([xCurveFinal, yCurveFinal]);
 
     for (let i = 0; i < curveFinal.length; i++) {
-      for (let j = 0; j < 2; j++) {
-        // console.log(curveFinal[i][j]);
-        if (
-          curveFinal[i][j] > window.innerWidth / 2 ||
-          (curveFinal[i][j] < 0 && curveFinal[i][j] < -(window.innerWidth / 2))
-        ) {
-          // if (curveFinal[i][j] < 0) {
-          //   tempCurve = curveFinal[i][j] / -(window.innerWidth / 2);
-          //   if (tempCurve > overCurveX) {
-          //     overCurveX = tempCurve.toFixed(0);
-          //     overCurveY = overCurveX;
-          //   }
-          // } else {
-          //   tempCurve = curveFinal[i][j] / window.innerHeight / 2;
-          //   if (tempCurve > overCurveY) {
-          //     overCurveY = tempCurve.toFixed(0);
-          //     overCurveX = overCurveY;
-          //   }
-          // }
-          // console.log(curveFinal[i][j]);
-          overCurveX = 1;
+      // console.log(curveFinal[i][0]);
+      if (
+        curveFinal[i][0] > window.innerWidth / 2 ||
+        curveFinal[i][0] + window.innerWidth / 2 < 0
+      ) {
+        // overCurveX = 1;
+        if (curveFinal[i][0] < 0) {
+          tempCurve = curveFinal[i][0] / -(window.innerWidth / 2);
+          if (tempCurve > overCurveX) {
+            overCurveX = tempCurve.toFixed(0);
+            overCurveY = overCurveX;
+          }
+        } else {
+          tempCurve = curveFinal[i][0] / window.innerWidth / 2;
+          if (tempCurve > overCurveX) {
+            overCurveX = tempCurve.toFixed(0);
+            overCurveY = overCurveX;
+          }
         }
+        // console.log(curveFinal[i][j]);
+      }
+
+      if (
+        curveFinal[i][1] > window.innerHeight / 2 ||
+        curveFinal[i][1] + window.innerHeight / 2 < 0
+      ) {
+        // overCurveY = 1;
       }
     }
     // console.log(overCurveX);
 
-    // if (
-    //   overCurveX >= 0 ||
-    //   overCurveX == 1 ||
-    //   overCurveY >= 0 ||
-    //   overCurveY == 1
-    // ) {
-    //   overCurveX = 1.5;
-    //   overCurveY = 1.5;
+    // calPoint = 1;
+    // if (overCurveX >= 0.41 || overCurveY >= 0.41) {
+    //   calPoint = 2;
     // }
 
-    if (overCurveX > 0 || overCurveY > 0) {
+    console.log(calPoint);
+
+    if (calPoint == 2) {
       curveOver = curveFinal;
       curveFinal = [];
-
       curveOver.map((p1) => {
-        xFinal = p1[0] / 2;
-        yFinal = p1[1] / 2;
+        xFinal = p1[0] / calPoint;
+        yFinal = p1[1] / calPoint;
         curveFinal.push([xFinal, yFinal]);
       });
     } else {
       curveOver.map((p1) => {
-        xFinal = p1[0] / 2;
-        yFinal = p1[1] / 2;
+        xFinal = p1[0] / calPoint;
+        yFinal = p1[1] / calPoint;
         curveFinal.push([xFinal, yFinal]);
       });
     }
@@ -273,7 +283,8 @@ const PointsLaser = ({ history }) => {
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.0200251898;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020022205; // ดีที่สุด
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.018014184;
-      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005;
+      let l =
+        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005 * calPoint;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
