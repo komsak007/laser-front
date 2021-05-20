@@ -10,13 +10,12 @@ import {
 } from "./apiAdmin";
 import FileUpload from "./FileUpload";
 
-const UpdateProduct = ({ match }) => {
+const UpdateProduct = ({ match, history }) => {
   const [values, setValues] = useState({
     name: "",
     order: "",
     description: "",
     place: "",
-    categories: [],
     category: "",
     images: "",
     error: "",
@@ -24,6 +23,7 @@ const UpdateProduct = ({ match }) => {
     redirectToProfile: false,
     formData: "",
   });
+  const [categories, setCategories] = useState([]);
 
   const [loading, setLoading] = useState(false);
 
@@ -33,7 +33,6 @@ const UpdateProduct = ({ match }) => {
     order,
     description,
     place,
-    categories,
     error,
     images,
     createdProduct,
@@ -43,6 +42,11 @@ const UpdateProduct = ({ match }) => {
 
   const init = (productId) => {
     getProduct(productId).then((data) => {
+      if (localStorage.getItem("Host")) {
+        localStorage.removeItem("Host");
+      }
+      // console.log(data);
+      localStorage.setItem("Host", data.name);
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -81,13 +85,14 @@ const UpdateProduct = ({ match }) => {
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
-        setValues({ categories: data, formData: new FormData() });
+        setCategories(data);
       }
     });
   };
 
   useEffect(() => {
     init(match.params.productId);
+    // console.log(values);
   }, []);
 
   const handleChange = (name) => (event) => {
@@ -101,10 +106,10 @@ const UpdateProduct = ({ match }) => {
     event.preventDefault();
     // console.log(images);
     setValues({ ...values, error: "", loading: true });
-    if (name === "") {
+    if (localStorage.getItem("Host") === "undefined") {
       formData.set("name", user.name);
     } else {
-      formData.set("name", user.name);
+      formData.set("name", localStorage.getItem("Host"));
     }
     // for (let i = 0; i < images.length; i++) {
     //   formData.append("images", images[i]);
