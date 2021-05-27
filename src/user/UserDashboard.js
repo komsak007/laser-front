@@ -12,13 +12,7 @@ const Dashboard = () => {
     return (
       <div className="card">
         <h4 className="card-header">User Links</h4>
-        <ul className="list-group">
-          <li className="list-group-item">
-            <Link className="nav-link" to="/create/product">
-              Create Product
-            </Link>
-          </li>
-        </ul>
+        <ul className="list-group"></ul>
       </div>
     );
   };

@@ -59,6 +59,24 @@ export const getCategories = () => {
     .catch((err) => console.log(err));
 };
 
+export const getCategory = (categoryId) => {
+  return fetch(`${API}/category/${categoryId}`, {
+    method: "GET",
+  })
+    .then((response) => {
+      return response.json();
+    })
+    .catch((err) => console.log(err));
+};
+
+export const UpdateCategoryId = async (categoryId, userId, token, category) =>
+  await axios.put(`${API}/category/${categoryId}/${userId}`, category, {
+    headers: {
+      Accept: "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
 export const listOrders = (userId, token) => {
   return fetch(`${API}/order/list/${userId}`, {
     method: "GET",

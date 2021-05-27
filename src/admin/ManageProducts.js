@@ -43,7 +43,7 @@ const ManageProducts = () => {
           <h2 className="text-center">Total {products.length} products</h2>
           <hr />
           <ul className="list-group">
-            {products.map((p, i) => (
+            {products.reverse().map((p, i) => (
               <li
                 key={i}
                 className="list-group-item d-flex justify-content-between align-items-center"
@@ -58,6 +58,7 @@ const ManageProducts = () => {
                 </span>
               </li>
             ))}
+            <br />
           </ul>
         </div>
       </div>

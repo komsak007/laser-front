@@ -3,7 +3,7 @@ import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getCategories, deleteCategories } from "./apiAdmin";
 
-const ManageProducts = () => {
+const ManageProducts = ({ history }) => {
   const [categories, setCategories] = useState([]);
 
   const { user, token } = isAuthenticated();
@@ -49,13 +49,30 @@ const ManageProducts = () => {
                 className="list-group-item d-flex justify-content-between align-items-center"
               >
                 <strong>{c.name}</strong>
-                <span
-                  onClick={destroy(c._id)}
-                  className="badge badge-danger badge-pill"
-                  style={{ cursor: "pointer" }}
-                >
-                  Delete
-                </span>
+
+                <div>
+                  <div className="float-right">
+                    <span
+                      onClick={destroy(c._id)}
+                      className=" badge badge-danger badge-pill"
+                      style={{ cursor: "pointer" }}
+                    >
+                      Delete
+                    </span>
+                  </div>
+
+                  <div className="float-right mx-2">
+                    <span
+                      onClick={() =>
+                        history.push(`/admin/category/update/${c._id}`)
+                      }
+                      className="badge badge-warning badge-pill"
+                      style={{ cursor: "pointer" }}
+                    >
+                      Edit
+                    </span>
+                  </div>
+                </div>
               </li>
             ))}
           </ul>

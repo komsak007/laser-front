@@ -60,13 +60,14 @@ const UpdateUser = ({ match, history }) => {
         />
       </div>
 
+      <label className="text-muted">Role</label>
       <select onChange={handleChange("role")} className="form-control">
         <option>Please select</option>
         <option value="0">Technical</option>
         <option value="2">Draft</option>
       </select>
 
-      <button onClick={clickSubmit} className="btn btn-primary">
+      <button onClick={clickSubmit} className="btn btn-primary my-3">
         Submit
       </button>
     </form>
@@ -79,7 +80,7 @@ const UpdateUser = ({ match, history }) => {
       className="container col-md-8 offset-md-2"
     >
       {updateForm()}
-      {JSON.stringify(values)}
+      {/* {JSON.stringify(values)} */}
     </Layout>
   );
 };

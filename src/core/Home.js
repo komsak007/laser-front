@@ -99,15 +99,21 @@ const Home = () => {
         <div className="col-8">
           <h2 className="mb-4">Products</h2>
           <div className="row">
-            {filteredResults.map((product, i) => (
-              <div key={i} className="col-sm-4">
-                <Card
-                  product={product}
-                  showRemoveProductButton={false}
-                  showEditButton={user.role === 2 ? false : true}
-                />
-              </div>
-            ))}
+            {filteredResults.map((product, i) => {
+              return (
+                <div key={i} className="col-sm-4">
+                  <Card
+                    product={product}
+                    showRemoveProductButton={false}
+                    showEditButton={
+                      user.role === 2 || user.name !== product.name
+                        ? false
+                        : true
+                    }
+                  />
+                </div>
+              );
+            })}
           </div>
           <hr />
           {loadMoreButton()}

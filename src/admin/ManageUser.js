@@ -48,15 +48,9 @@ const ManageUser = ({ history }) => {
                 className="list-group-item d-flex justify-content-between align-items-center"
               >
                 <strong>{u.name}</strong>
-                {u.role === 1 && (
-                  <strong className="pl-5">ตำแหน่ง: Admin</strong>
-                )}
-                {u.role === 0 && (
-                  <strong className="pl-5">ตำแหน่ง: Technical</strong>
-                )}
-                {u.role === 2 && (
-                  <strong className="pl-5">ตำแหน่ง: Draft</strong>
-                )}
+                {u.role === 1 && <strong className="pl-5">Admin</strong>}
+                {u.role === 0 && <strong className="pl-5">Technical</strong>}
+                {u.role === 2 && <strong className="pl-5">Draft</strong>}
                 <span
                   onClick={() => history.push(`/admin/user/update/${u._id}`)}
                   className="float-right badge badge-warning badge-pill"

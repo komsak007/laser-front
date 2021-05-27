@@ -7,6 +7,9 @@ import Menu from "./core/Menu";
 import { API } from "./config";
 import { toast } from "react-toastify";
 import { Affix, Button, Checkbox } from "antd";
+import { isAuthenticated } from "./auth";
+
+const { user } = isAuthenticated();
 
 const PointsLaser = ({ history }) => {
   const [tool, setTool] = useState("pen");
@@ -396,7 +399,9 @@ const PointsLaser = ({ history }) => {
   };
 
   const handleExport = () => {
-    createLaser({ points, order, lines, curves }).then(() =>
+    let username = user.name;
+    // console.log(username);
+    createLaser({ username, points, order, lines, curves }).then(() =>
       toast.success("Save data to database")
     );
   };
@@ -406,7 +411,11 @@ const PointsLaser = ({ history }) => {
       <Fragment>
         <Menu />
         <Affix offsetTop={top}>
-          <Button type="primary" onClick={handleExport}>
+          <Button
+            type="primary"
+            onClick={handleExport}
+            disabled={order ? false : true}
+          >
             Save
           </Button>
           <span className="pl-2">Order:</span>
