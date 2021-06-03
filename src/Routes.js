@@ -37,6 +37,7 @@ const ManageProducts = lazy(() => import("./admin/ManageProducts"));
 const UpdateProduct = lazy(() => import("./admin/UpdateProduct"));
 const UpdateUser = lazy(() => import("./admin/UpdateUser"));
 const ManageUser = lazy(() => import("./admin/ManageUser"));
+const Estimate = lazy(() => import("./estimate/estimate"));
 
 // import Signup from "./user/Signup";
 // import Signin from "./user/Signin";
@@ -101,6 +102,8 @@ const Routes = () => {
             exact
             component={UpdateCategory}
           />
+
+          <PrivateRoute path="/estimate" exact component={Estimate} />
         </Switch>
       </BrowserRouter>
     </Suspense>
