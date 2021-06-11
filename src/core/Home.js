@@ -7,7 +7,7 @@ import { isAuthenticated } from "../auth";
 
 const { user } = isAuthenticated();
 
-const Home = () => {
+const Home = ({ history }) => {
   const [myFilters, setMyFilters] = useState({
     filters: { category: [], price: [] },
   });
@@ -97,7 +97,20 @@ const Home = () => {
         </div>
 
         <div className="col-8">
-          <h2 className="mb-4">Products</h2>
+          <div className="row">
+            <div className="col-10">
+              <h2>Products</h2>
+            </div>
+            <div className="col-2 mt-4">
+              <span
+                onClick={() => history.push(`/create/product`)}
+                className=" badge-lg badge-primary badge-pill"
+                style={{ cursor: "pointer", display: "center" }}
+              >
+                Create Order
+              </span>
+            </div>
+          </div>
           <div className="row">
             {filteredResults.map((product, i) => {
               return (

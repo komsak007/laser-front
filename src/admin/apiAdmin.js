@@ -225,6 +225,11 @@ export const createLaser = async (product) => {
   await axios.post(`${API}/product/laser`, product);
 };
 
+export const addLaser = async (product) => {
+  // console.log(product);
+  await axios.post(`${API}/product/addlaser`, product);
+};
+
 export const listUser = () => {
   return fetch(`${API}/user/list`, {
     method: "GET",

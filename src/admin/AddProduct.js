@@ -6,7 +6,7 @@ import FileUpload from "./FileUpload";
 
 const { user, token } = isAuthenticated();
 
-const AddProduct = () => {
+const AddProduct = ({ history }) => {
   const [values, setValues] = useState({
     name: user.name,
     order: "",
@@ -55,14 +55,14 @@ const AddProduct = () => {
     setValues({ ...values, error: "", createdProduct: "", [name]: value });
   };
 
-  const clickSubmit = (event) => {
+  const clickSubmit = async (event) => {
     event.preventDefault();
     // formData.set("images", images);
     // formData.set("images", images);
     formData.set("name", user.name);
     setValues({ ...values, error: "", loading: true });
 
-    createProduct(user._id, token, values, images).then((data) => {
+    await createProduct(user._id, token, values, images).then((data) => {
       if (data.error) {
         setValues({ ...values, error: data.error });
       } else {
@@ -79,7 +79,7 @@ const AddProduct = () => {
         });
       }
     });
-    window.scrollTo(0, 0);
+    await history.push("/");
   };
 
   const newPostForm = () => (
@@ -190,6 +190,7 @@ const AddProduct = () => {
           {newPostForm()}
         </div>
       </div>
+      {JSON.stringify(values)}
     </Layout>
   );
 };

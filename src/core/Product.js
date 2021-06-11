@@ -245,7 +245,7 @@ const Product = ({ match }) => {
 
   const loadProduct = () => {
     read(match.params.productId).then((res) => {
-      // console.log(res);
+      console.log(res);
       setPoints(res.point);
       setCurves(res.curve);
       setLines(res.lines);
@@ -509,8 +509,8 @@ const Product = ({ match }) => {
           <Layer>
             {lines.map((line, i) => (
               <Line
-                x={-1000}
-                y={-750}
+                x={-(window.innerWidth - 250) / 2}
+                y={-(window.innerHeight - 250) / 2}
                 key={i}
                 points={line.points}
                 stroke="#df4b26"
@@ -524,7 +524,7 @@ const Product = ({ match }) => {
             ))}
           </Layer>
 
-          <Layer width={2000} height={1500}>
+          <Layer width={window.innerWidth} height={window.innerHeight}>
             {pointFinal.length >= 2 && textLabel(pointFinal)}
 
             <Line
@@ -553,7 +553,6 @@ const Product = ({ match }) => {
                   fill="white"
                   stroke="black"
                   strokeWidth={2}
-                  draggable
                   {...startPointAttr}
                 />
               );

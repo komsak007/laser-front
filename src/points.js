@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import axios from "axios";
-import { createLaser } from "./admin/apiAdmin";
+import { addLaser, getProducts } from "./admin/apiAdmin";
 import BluePrint from "./laser/BluePrint";
 import { Stage, Layer, Line, Rect, Text, Tag, Label } from "react-konva";
 import Menu from "./core/Menu";
@@ -15,6 +15,7 @@ const PointsLaser = ({ history }) => {
   const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState([]);
   const [top] = useState(10);
+  const [products, setProducts] = useState([]);
   const [points, setPoints] = useState([]);
   const [curves, setCurves] = useState([]);
   const [order, setOrder] = useState("");
@@ -30,6 +31,8 @@ const PointsLaser = ({ history }) => {
   const isDrawing = useRef(false);
 
   useEffect(() => {
+    loadProducts();
+
     let line = [];
     let curvePoint = [];
     let xCurve, yCurve;
@@ -294,6 +297,16 @@ const PointsLaser = ({ history }) => {
     });
   }
 
+  const loadProducts = () => {
+    getProducts().then((data) => {
+      if (data.error) {
+        console.log(data.error);
+      } else {
+        setProducts(data);
+      }
+    });
+  };
+
   // console.log(curveOver, curveFinal);
 
   const handleMouseDown = (e) => {
@@ -400,10 +413,13 @@ const PointsLaser = ({ history }) => {
 
   const handleExport = () => {
     let username = user.name;
-    // console.log(username);
-    createLaser({ username, points, order, lines, curves }).then(() =>
-      toast.success("Save data to database")
-    );
+    console.log(order);
+    addLaser({
+      order,
+      point: points,
+      curves,
+      draw: { tool, points: lines },
+    }).then(() => toast.success("Save data to database"));
   };
 
   return (
@@ -414,22 +430,30 @@ const PointsLaser = ({ history }) => {
           <Button
             type="primary"
             onClick={handleExport}
-            disabled={order ? false : true}
+            disabled={order !== "" ? false : true}
           >
             Save
           </Button>
           <span className="pl-2">Order:</span>
-          <input
-            type="text"
-            name="name"
-            required
-            className="md-3 ml-1 mr-3"
-            onChange={(e) => {
-              setOrder(e.target.value);
-            }}
+          <select
+            className="mx-2"
             value={order}
-            placeholder="Order number"
-          />
+            onChange={(e) => setOrder(e.target.value)}
+            placeholder="Select order"
+          >
+            <option value="" disabled selected>
+              Select order
+            </option>
+            {products.map((p) => {
+              if (!p.point) {
+                return (
+                  <option value={p.order} key={p._id}>
+                    {p.order}
+                  </option>
+                );
+              }
+            })}
+          </select>
           <select
             value={tool}
             onChange={(e) => {
@@ -439,6 +463,7 @@ const PointsLaser = ({ history }) => {
             <option value="pen">Pen</option>
             <option value="eraser">Eraser</option>
           </select>
+
           {check ? (
             <span className="p-2">Close Dxf: </span>
           ) : (

@@ -19,15 +19,29 @@ const Card = ({
   const { user, token } = isAuthenticated();
 
   const showViewButton = (showViewProductButton) => {
-    return (
-      showViewProductButton && (
+    if (!product.point) {
+      return (
         <Link to={`/product/${product._id}`} className="mr-2">
-          <button className="btn btn-outline-primary mt-2 mb-2">
-            View Product
+          <button
+            style={{ color: "red" }}
+            disabled
+            className="btn btn-outline-dark mt-2 mb-2"
+          >
+            รอการวัดระยะ
           </button>
         </Link>
-      )
-    );
+      );
+    } else {
+      return (
+        showViewProductButton && (
+          <Link to={`/product/${product._id}`} className="mr-2">
+            <button className="btn btn-outline-primary mt-2 mb-2">
+              View Product
+            </button>
+          </Link>
+        )
+      );
+    }
   };
 
   const showEdit = (showEditButton) => {
