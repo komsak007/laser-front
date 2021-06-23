@@ -478,8 +478,8 @@ const PointsLaser = ({ history }) => {
             <Stage
               width={window.innerWidth}
               height={window.innerHeight}
-              offsetX={-(window.innerWidth - 250) / 2}
-              offsetY={-(window.innerHeight - 250) / 2}
+              offsetX={-window.innerWidth / 2}
+              offsetY={-(window.innerHeight - 100) / 2}
               scaleX={stageScale}
               scaleY={stageScale}
               x={stageX}
@@ -495,8 +495,8 @@ const PointsLaser = ({ history }) => {
               <Layer>
                 {lines.map((line, i) => (
                   <Line
-                    x={-(window.innerWidth - 250) / 2}
-                    y={-(window.innerHeight - 250) / 2}
+                    x={-window.innerWidth / 2}
+                    y={-(window.innerHeight - 100) / 2}
                     key={i}
                     points={line.points}
                     stroke="#df4b26"
