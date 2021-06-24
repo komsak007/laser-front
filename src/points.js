@@ -44,12 +44,12 @@ const PointsLaser = ({ history }) => {
         response.data.point.map((p) => {
           // console.log(p);
           x99 =
-            (p[0] + 0.0273575) *
+            (p[0] + 0.02785) *
             Math.cos(p[1] * (Math.PI / 180)) *
             150 *
             6.56734569;
           y99 =
-            (p[0] + 0.0273575) *
+            (p[0] + 0.02785) *
             Math.sin(p[1] * (Math.PI / 180)) *
             150 *
             6.56734569;
@@ -67,12 +67,12 @@ const PointsLaser = ({ history }) => {
         response.data.curve.map((p) => {
           // console.log(p);
           xCurve =
-            (p[0] + 0.0273575) *
+            (p[0] + 0.02785) *
             Math.cos(p[1] * (Math.PI / 180)) *
             150 *
             6.56734569;
           yCurve =
-            (p[0] + 0.0273575) *
+            (p[0] + 0.02785) *
             Math.sin(p[1] * (Math.PI / 180)) *
             150 *
             6.56734569;

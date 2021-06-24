@@ -118,11 +118,7 @@ const Home = ({ history }) => {
                   <Card
                     product={product}
                     showRemoveProductButton={false}
-                    showEditButton={
-                      user.role === 2 || user.name !== product.name
-                        ? false
-                        : true
-                    }
+                    showEditButton={user.role === 2 ? false : true}
                   />
                 </div>
               );
