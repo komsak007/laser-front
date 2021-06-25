@@ -363,7 +363,7 @@ const PointsLaser = ({ history }) => {
       // let l =
       //   Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005 * calPoint;
       let l =
-        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006647005 * calPoint;
+        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006660005 * calPoint;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
