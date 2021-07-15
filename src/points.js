@@ -34,8 +34,6 @@ const PointsLaser = ({ history }) => {
     loadProducts();
 
     let line = [];
-    let curvePoint = [];
-    let xCurve, yCurve;
     let x99;
     let y99;
     setInterval(() => {
@@ -44,15 +42,15 @@ const PointsLaser = ({ history }) => {
         response.data.point.map((p) => {
           // console.log(p);
           x99 =
-            (p[0] + 0.02785) *
+            (p[0] + 0.06721) *
             Math.cos(p[1] * (Math.PI / 180)) *
             150 *
-            6.56734569;
+            6.64946569;
           y99 =
-            (p[0] + 0.02785) *
+            (p[0] + 0.06721) *
             Math.sin(p[1] * (Math.PI / 180)) *
             150 *
-            6.56734569;
+            6.64946569;
           // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
           // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
           // console.log(x99);
@@ -62,20 +60,28 @@ const PointsLaser = ({ history }) => {
         // response.data.point.map(p => console.log(p[0]))
       });
 
+      setPoints(line);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    var curvePoint = [];
+    let xCurve, yCurve;
+    setInterval(() => {
       axios.get(`${API}/curve`).then((response, i) => {
         curvePoint = [];
         response.data.curve.map((p) => {
           // console.log(p);
           xCurve =
-            (p[0] + 0.02785) *
+            (p[0] + 0.06721) *
             Math.cos(p[1] * (Math.PI / 180)) *
             150 *
-            6.56734569;
+            6.64946569;
           yCurve =
-            (p[0] + 0.02785) *
+            (p[0] + 0.06721) *
             Math.sin(p[1] * (Math.PI / 180)) *
             150 *
-            6.56734569;
+            6.64946569;
 
           // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
           // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
@@ -83,22 +89,10 @@ const PointsLaser = ({ history }) => {
           curvePoint.push([xCurve, yCurve]);
           // console.log(line)
         });
+
+        setCurves(curvePoint);
       });
-
-      setCurves(curvePoint);
-      setPoints(line);
-
-      // console.log(curvePoint);
-      //   const checkSize = () => {
-      //   setSize({
-      //     width: window.innerWidth,
-      //     height: window.innerHeight
-      //   });
-      // };
-      //
-      // window.addEventListener("resize", checkSize);
-      // return () => window.removeEventListener("resize", checkSize)
-    }, 5000);
+    }, 1000);
   }, []);
 
   // Point
@@ -112,8 +106,8 @@ const PointsLaser = ({ history }) => {
   let overPoint = [];
   let calPoint = 1;
   points.map((p) => {
-    xFinal = p[0] / 6.56734569;
-    yFinal = p[1] / 6.56734569;
+    xFinal = p[0] / 6.64946569;
+    yFinal = p[1] / 6.64946569;
     pointFinal.push([xFinal, yFinal]);
     // console.log(pointFinal);
   });
@@ -197,6 +191,18 @@ const PointsLaser = ({ history }) => {
       yFinal = p1[1] / calPoint;
       pointFinal.push([xFinal, yFinal]);
     });
+
+    if (!pointFinal[0] || !pointFinal[1]) {
+      console.log("wait");
+    } else {
+      var angle =
+        (Math.atan2(
+          pointFinal[1][1] - pointFinal[0][1],
+          pointFinal[1][0] - pointFinal[0][0]
+        ) *
+          180) /
+        Math.PI;
+    }
   }
 
   // Curve
@@ -211,8 +217,8 @@ const PointsLaser = ({ history }) => {
   let calCurve = 1;
 
   curves.map((p) => {
-    xCurveFinal = p[0] / 6.56734569;
-    yCurveFinal = p[1] / 6.56734569;
+    xCurveFinal = p[0] / 6.64946569;
+    yCurveFinal = p[1] / 6.64946569;
     curveFinal.push([xCurveFinal, yCurveFinal]);
   });
 
@@ -363,7 +369,7 @@ const PointsLaser = ({ history }) => {
       // let l =
       //   Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005 * calPoint;
       let l =
-        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006660005 * calPoint;
+        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006651005 * calPoint;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
@@ -392,7 +398,7 @@ const PointsLaser = ({ history }) => {
 
     return lpoint.map((point) => {
       return (
-        <Label x={point.x} y={point.y}>
+        <Label x={point.x} y={point.y} rotation={angle}>
           <Tag
             fill="black"
             pointerDirection={point.direction}
@@ -406,6 +412,8 @@ const PointsLaser = ({ history }) => {
             fontFamily="Calibri"
             fontSize={10}
             padding={4}
+            scaleY={-1}
+            offsetY={17}
             fill="white"
           />
         </Label>
@@ -415,12 +423,12 @@ const PointsLaser = ({ history }) => {
 
   const handleExport = () => {
     let username = user.name;
-    console.log(order);
+    // console.log(order);
     addLaser({
       order,
       point: points,
       curves,
-      draw: { tool, points: lines },
+      lines: { tool, points: lines },
     }).then(() => toast.success("Save data to database"));
   };
 
@@ -481,7 +489,7 @@ const PointsLaser = ({ history }) => {
               width={window.innerWidth}
               height={window.innerHeight}
               offsetX={-window.innerWidth / 2}
-              offsetY={-(window.innerHeight - 100) / 2}
+              offsetY={-(window.innerHeight - 200) / 2}
               scaleX={stageScale}
               scaleY={stageScale}
               x={stageX}
@@ -512,13 +520,19 @@ const PointsLaser = ({ history }) => {
                 ))}
               </Layer>
 
-              <Layer width={window.innerWidth} height={window.innerHeight}>
+              <Layer
+                width={window.innerWidth}
+                height={window.innerHeight}
+                scaleY={-1}
+                rotation={angle}
+              >
                 {pointFinal.length >= 2 && textLabel(pointFinal)}
 
                 <Line
                   points={flattenedPoints}
                   stroke="black"
                   strokeWidth={5}
+
                   // closed={isFinished}
                 />
                 {pointFinal.map((point, index) => {
@@ -541,7 +555,9 @@ const PointsLaser = ({ history }) => {
                       height={width / 1.2}
                       fill="white"
                       stroke="black"
+                      // rotation={30}
                       strokeWidth={2}
+                      // rotation={angle}
                       {...startPointAttr}
                     />
                   );

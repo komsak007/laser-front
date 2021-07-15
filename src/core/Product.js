@@ -137,6 +137,18 @@ const Product = ({ match }) => {
       yFinal = p1[1] / calPoint;
       pointFinal.push([xFinal, yFinal]);
     });
+
+    if (!pointFinal[0] || !pointFinal[1]) {
+      console.log("wait");
+    } else {
+      var angle =
+        (Math.atan2(
+          pointFinal[1][1] - pointFinal[0][1],
+          pointFinal[1][0] - pointFinal[0][0]
+        ) *
+          180) /
+        Math.PI;
+    }
   }
 
   // Curve
@@ -245,7 +257,7 @@ const Product = ({ match }) => {
 
   const loadProduct = () => {
     read(match.params.productId).then((res) => {
-      console.log(res);
+      console.log(res.lines);
       setPoints(res.point);
       setCurves(res.curve);
       setLines(res.lines);
@@ -311,20 +323,22 @@ const Product = ({ match }) => {
 
     return lpoint.map((point, i) => {
       return (
-        <Label key={i} x={point.x} y={point.y}>
+        <Label key={i} x={point.x} y={point.y} rotation={angle}>
           <Tag
             fill="black"
             pointerDirection={point.direction}
-            pointerWidth={10}
-            pointerHeight={10}
+            pointerWidth={8}
+            pointerHeight={8}
             lineJoin="round"
             shadowColor="black"
           />
           <Text
             text={point.l.toFixed(3) + " m "}
             fontFamily="Calibri"
-            fontSize={18}
-            padding={5}
+            fontSize={10}
+            padding={4}
+            scaleY={-1}
+            offsetY={17}
             fill="white"
           />
         </Label>
@@ -498,8 +512,8 @@ const Product = ({ match }) => {
         <Stage
           width={window.innerWidth}
           height={window.innerHeight}
-          offsetX={-(window.innerWidth - 250) / 2}
-          offsetY={-(window.innerHeight - 250) / 2}
+          offsetX={-window.innerWidth / 2}
+          offsetY={-(window.innerHeight - 200) / 2}
           scaleX={stageScale}
           scaleY={stageScale}
           x={stageX}
@@ -524,7 +538,12 @@ const Product = ({ match }) => {
             ))}
           </Layer>
 
-          <Layer width={window.innerWidth} height={window.innerHeight}>
+          <Layer
+            width={window.innerWidth}
+            height={window.innerHeight}
+            scaleY={-1}
+            rotation={angle}
+          >
             {pointFinal.length >= 2 && textLabel(pointFinal)}
 
             <Line

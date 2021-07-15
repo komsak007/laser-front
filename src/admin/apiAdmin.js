@@ -186,12 +186,15 @@ export const updateProduct = async (
   product,
   images
 ) =>
-  await axios.put(`${API}/product/${productId}/${userId}`, product, {
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-  });
+  await axios.put(
+    `${API}/product/${productId}/${userId}`,
+    { product, images },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
 
 export const updateImages = async (productId, userId, token, images) =>
   await axios.put(
