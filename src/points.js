@@ -2,7 +2,8 @@ import React, { useState, useEffect, Fragment, useRef } from "react";
 import axios from "axios";
 import { addLaser, getProducts } from "./admin/apiAdmin";
 import BluePrint from "./laser/BluePrint";
-import { Stage, Layer, Line, Rect, Text, Tag, Label } from "react-konva";
+import { Stage, Layer, Line, Rect, Text, Tag, Label, Image } from "react-konva";
+import useImage from "use-image";
 import Menu from "./core/Menu";
 import { API } from "./config";
 import { toast } from "react-toastify";
@@ -12,7 +13,7 @@ import { isAuthenticated } from "./auth";
 const { user } = isAuthenticated();
 
 const PointsLaser = ({ history }) => {
-  const [tool, setTool] = useState("pen");
+  const [tool, setTool] = useState("none");
   const [lines, setLines] = useState([]);
   const [top] = useState(10);
   const [products, setProducts] = useState([]);
@@ -26,9 +27,16 @@ const PointsLaser = ({ history }) => {
   const [setMouseOverStartPoint] = useState(false);
   const [isFinished] = useState(true);
   const [check, setCheck] = useState(false);
+  const [lotusTop, setLotusTop] = useState([]);
+
+  const [image] = useImage(
+    require("./img/shape_triangle-removebg-preview.png")
+  );
 
   const stageRef = useRef(null);
   const isDrawing = useRef(false);
+
+  var anglePoint;
 
   useEffect(() => {
     loadProducts();
@@ -42,15 +50,15 @@ const PointsLaser = ({ history }) => {
         response.data.point.map((p) => {
           // console.log(p);
           x99 =
-            (p[0] + 0.06721) *
+            (p[0] + 0.029475) *
             Math.cos(p[1] * (Math.PI / 180)) *
             150 *
-            6.64946569;
+            6.52746569;
           y99 =
-            (p[0] + 0.06721) *
+            (p[0] + 0.029475) *
             Math.sin(p[1] * (Math.PI / 180)) *
             150 *
-            6.64946569;
+            6.52746569;
           // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
           // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
           // console.log(x99);
@@ -73,15 +81,15 @@ const PointsLaser = ({ history }) => {
         response.data.curve.map((p) => {
           // console.log(p);
           xCurve =
-            (p[0] + 0.06721) *
+            (p[0] + 0.029475) *
             Math.cos(p[1] * (Math.PI / 180)) *
             150 *
-            6.64946569;
+            6.52746569;
           yCurve =
-            (p[0] + 0.06721) *
+            (p[0] + 0.029475) *
             Math.sin(p[1] * (Math.PI / 180)) *
             150 *
-            6.64946569;
+            6.52746569;
 
           // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
           // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
@@ -106,8 +114,8 @@ const PointsLaser = ({ history }) => {
   let overPoint = [];
   let calPoint = 1;
   points.map((p) => {
-    xFinal = p[0] / 6.64946569;
-    yFinal = p[1] / 6.64946569;
+    xFinal = p[0] / 6.52746569;
+    yFinal = p[1] / 6.52746569;
     pointFinal.push([xFinal, yFinal]);
     // console.log(pointFinal);
   });
@@ -195,13 +203,15 @@ const PointsLaser = ({ history }) => {
     if (!pointFinal[0] || !pointFinal[1]) {
       console.log("wait");
     } else {
-      var angle =
+      anglePoint =
         (Math.atan2(
           pointFinal[1][1] - pointFinal[0][1],
           pointFinal[1][0] - pointFinal[0][0]
         ) *
           180) /
         Math.PI;
+
+      // console.log(anglePoint);
     }
   }
 
@@ -214,11 +224,11 @@ const PointsLaser = ({ history }) => {
     tempCurve = 0;
   let xCurve = 0,
     yCurve = 0;
-  let calCurve = 1;
+  var calCurve = 1;
 
   curves.map((p) => {
-    xCurveFinal = p[0] / 6.64946569;
-    yCurveFinal = p[1] / 6.64946569;
+    xCurveFinal = p[0] / 6.52746569;
+    yCurveFinal = p[1] / 6.52746569;
     curveFinal.push([xCurveFinal, yCurveFinal]);
   });
 
@@ -315,10 +325,17 @@ const PointsLaser = ({ history }) => {
 
   // console.log(curveOver, curveFinal);
 
-  const handleMouseDown = (e) => {
-    isDrawing.current = true;
-    const pos = e.target.getStage().getPointerPosition();
-    setLines([...lines, { tool, points: [pos.x, pos.y] }]);
+  const handleMouseDown = async (e) => {
+    if (tool === "pen" || tool === "eraser") {
+      isDrawing.current = true;
+      const pos = e.target.getStage().getPointerPosition();
+      setLines([...lines, { tool, points: [pos.x, pos.y] }]);
+    } else if (tool === "lotus") {
+      let x = e.evt.x || e.evt.touches[0].screenX;
+      let y = e.evt.y || e.evt.touches[0].screenY;
+      setLotusTop([...lotusTop, { x, y }]);
+      // console.log(lotusTop);
+    }
   };
 
   const handleMouseMove1 = (e) => {
@@ -369,7 +386,7 @@ const PointsLaser = ({ history }) => {
       // let l =
       //   Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005 * calPoint;
       let l =
-        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006651005 * calPoint;
+        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006517005 * calPoint;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
@@ -398,7 +415,20 @@ const PointsLaser = ({ history }) => {
 
     return lpoint.map((point) => {
       return (
-        <Label x={point.x} y={point.y} rotation={angle}>
+        <Label
+          x={point.x}
+          y={point.y}
+          rotation={
+            calPoint === 1
+              ? anglePoint
+              : Math.atan2(
+                  pointFinal[1][1] - pointFinal[0][1],
+                  pointFinal[1][0] - pointFinal[0][0]
+                ) + 137
+          }
+          // offsetX={10}
+          // offsetY={10}
+        >
           <Tag
             fill="black"
             pointerDirection={point.direction}
@@ -470,9 +500,22 @@ const PointsLaser = ({ history }) => {
               setTool(e.target.value);
             }}
           >
+            <option value="none">None</option>
             <option value="pen">Pen</option>
             <option value="eraser">Eraser</option>
+            <option value="lotus">Lotus</option>
           </select>
+
+          <Button
+            type="primary"
+            style={{ marginLeft: 10 }}
+            onClick={() => {
+              setLotusTop(lotusTop.slice(0, lotusTop.length - 1));
+            }}
+            disabled={lotusTop.length > 0 ? false : true}
+          >
+            Undo
+          </Button>
 
           {check ? (
             <span className="p-2">Close Dxf: </span>
@@ -482,7 +525,18 @@ const PointsLaser = ({ history }) => {
           <Checkbox onChange={(e) => setCheck(e.target.checked)} />
         </Affix>
         {check ? (
-          <BluePrint points={points} curves={curves} />
+          <BluePrint
+            points={points}
+            curves={curves}
+            anglePoint={
+              calPoint === 1
+                ? anglePoint
+                : Math.atan2(
+                    pointFinal[1][1] - pointFinal[0][1],
+                    pointFinal[1][0] - pointFinal[0][0]
+                  ) + 137
+            }
+          />
         ) : (
           <div style={{ position: "fixed" }}>
             <Stage
@@ -506,7 +560,7 @@ const PointsLaser = ({ history }) => {
                 {lines.map((line, i) => (
                   <Line
                     x={-window.innerWidth / 2}
-                    y={-(window.innerHeight - 100) / 2}
+                    y={-(window.innerHeight - 200) / 2}
                     key={i}
                     points={line.points}
                     stroke="#df4b26"
@@ -520,11 +574,31 @@ const PointsLaser = ({ history }) => {
                 ))}
               </Layer>
 
+              <Layer>
+                {lotusTop &&
+                  lotusTop.map((top) => (
+                    <Image
+                      x={top.x - (window.innerWidth + 45) / 2}
+                      y={top.y - window.innerHeight / 2}
+                      image={image}
+                      width={50}
+                      height={50}
+                    />
+                  ))}
+              </Layer>
+
               <Layer
                 width={window.innerWidth}
                 height={window.innerHeight}
                 scaleY={-1}
-                rotation={angle}
+                rotation={
+                  calPoint === 1
+                    ? anglePoint
+                    : Math.atan2(
+                        pointFinal[1][1] - pointFinal[0][1],
+                        pointFinal[1][0] - pointFinal[0][0]
+                      ) + 137
+                }
               >
                 {pointFinal.length >= 2 && textLabel(pointFinal)}
 
@@ -551,11 +625,13 @@ const PointsLaser = ({ history }) => {
                       key={index}
                       x={x}
                       y={y}
+                      offsetY={4}
+                      offsetX={-2}
                       width={width / 1.2}
                       height={width / 1.2}
                       fill="white"
                       stroke="black"
-                      // rotation={30}
+                      rotation={50}
                       strokeWidth={2}
                       // rotation={angle}
                       {...startPointAttr}

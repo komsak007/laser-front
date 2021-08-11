@@ -18,6 +18,8 @@ import JSZip from "jszip";
 var SCENE_BASE_WIDTH = window.innerWidth;
 var SCENE_BASE_HEIGHT = window.innerHeight;
 
+var anglePoint;
+
 const Product = ({ match }) => {
   const [product, setProduct] = useState({});
   const [lines, setLines] = useState([]);
@@ -52,8 +54,8 @@ const Product = ({ match }) => {
   let overPoint = [];
   let calPoint = 1;
   points.map((p) => {
-    xFinal = p[0] / 6.56734569;
-    yFinal = p[1] / 6.56734569;
+    xFinal = p[0] / 6.52746569;
+    yFinal = p[1] / 6.52746569;
     pointFinal.push([xFinal, yFinal]);
     // console.log(pointFinal);
   });
@@ -141,13 +143,15 @@ const Product = ({ match }) => {
     if (!pointFinal[0] || !pointFinal[1]) {
       console.log("wait");
     } else {
-      var angle =
+      anglePoint =
         (Math.atan2(
           pointFinal[1][1] - pointFinal[0][1],
           pointFinal[1][0] - pointFinal[0][0]
         ) *
           180) /
         Math.PI;
+
+      // console.log(anglePoint);
     }
   }
 
@@ -163,8 +167,8 @@ const Product = ({ match }) => {
   let calCurve = 1;
 
   curves.map((p) => {
-    xCurveFinal = p[0] / 6.56734569;
-    yCurveFinal = p[1] / 6.56734569;
+    xCurveFinal = p[0] / 6.52746569;
+    yCurveFinal = p[1] / 6.52746569;
     curveFinal.push([xCurveFinal, yCurveFinal]);
   });
 
@@ -249,7 +253,7 @@ const Product = ({ match }) => {
     });
   }
 
-  let model = new PolyLine({ points, curves });
+  let model = new PolyLine({ points, curves, anglePoint });
 
   //export DXF
   const filename = "Save DXF";
@@ -294,7 +298,9 @@ const Product = ({ match }) => {
       let dy = points[i + 1][1] - points[i][1];
       let x = points[i][0] + dx / 2;
       let y = points[i][1] + dy / 2;
-      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005;
+      // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005;
+      let l =
+        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006517005 * calPoint;
       // let l = (Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2))*42);
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
@@ -323,7 +329,7 @@ const Product = ({ match }) => {
 
     return lpoint.map((point, i) => {
       return (
-        <Label key={i} x={point.x} y={point.y} rotation={angle}>
+        <Label key={i} x={point.x} y={point.y} rotation={anglePoint}>
           <Tag
             fill="black"
             pointerDirection={point.direction}
@@ -506,7 +512,7 @@ const Product = ({ match }) => {
           >
             Download
           </Button>
-          <BluePrint points={points} curves={curves} />
+          <BluePrint points={points} curves={curves} anglePoint={anglePoint} />
         </>
       ) : (
         <Stage
@@ -542,7 +548,7 @@ const Product = ({ match }) => {
             width={window.innerWidth}
             height={window.innerHeight}
             scaleY={-1}
-            rotation={angle}
+            rotation={anglePoint}
           >
             {pointFinal.length >= 2 && textLabel(pointFinal)}
 
