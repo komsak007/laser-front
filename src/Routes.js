@@ -23,6 +23,7 @@ import "antd/dist/antd.css";
 const Signup = lazy(() => import("./user/Signup"));
 const Signin = lazy(() => import("./user/Signin"));
 const Home = lazy(() => import("./core/Home"));
+const ProductNumber = lazy(() => import("./core/ProductNumber"));
 const PrivateRoute = lazy(() => import("./auth/PrivateRoute"));
 const Dashboard = lazy(() => import("./user/UserDashboard"));
 const AdminRoute = lazy(() => import("./auth/AdminRoute"));
@@ -31,13 +32,13 @@ const AddCategory = lazy(() => import("./admin/AddCategory"));
 const AddProduct = lazy(() => import("./admin/AddProduct"));
 const PointsLaser = lazy(() => import("./points"));
 const Product = lazy(() => import("./core/Product"));
-const ManageCategories = lazy(() => import("./admin/ManageCategories"));
 const UpdateCategory = lazy(() => import("./admin/UpdateCategory"));
 const ManageProducts = lazy(() => import("./admin/ManageProducts"));
 const UpdateProduct = lazy(() => import("./admin/UpdateProduct"));
 const UpdateUser = lazy(() => import("./admin/UpdateUser"));
 const ManageUser = lazy(() => import("./admin/ManageUser"));
 const Estimate = lazy(() => import("./estimate/estimate"));
+const ManageMeasurement = lazy(() => import("./admin/ManageMeasurement"));
 
 // import Signup from "./user/Signup";
 // import Signin from "./user/Signin";
@@ -81,11 +82,6 @@ const Routes = () => {
             exact
             component={UpdateProduct}
           />
-          <AdminRoute
-            path="/admin/categories"
-            exact
-            component={ManageCategories}
-          />
 
           <AdminRoute path="/admin/products" exact component={ManageProducts} />
 
@@ -104,6 +100,12 @@ const Routes = () => {
           />
 
           <PrivateRoute path="/estimate" exact component={Estimate} />
+          <PrivateRoute path="/productNumber" exact component={ProductNumber} />
+          <AdminRoute
+            path="/admin/measurement"
+            exact
+            component={ManageMeasurement}
+          />
         </Switch>
       </BrowserRouter>
     </Suspense>

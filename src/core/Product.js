@@ -447,7 +447,7 @@ const Product = ({ match }) => {
                       <img
                         src={i.url}
                         key={i.public_id}
-                        style={{ width: "fit", height: "fit" }}
+                        style={{ width: "fit", height: "500px" }}
                       />
                     ))}
                 </Carousel>
@@ -457,6 +457,7 @@ const Product = ({ match }) => {
                     <img
                       src="https://www.allianceplast.com/wp-content/uploads/2017/11/no-image.png"
                       className="mb-3 card-image"
+                      style={{ width: "fit", height: "500px" }}
                     />
                   }
                 ></Card>
@@ -464,12 +465,39 @@ const Product = ({ match }) => {
             </div>
 
             <div className="col-md-3">
-              <h1 className="bg-info p-3">ผู้รับผิดชอบ: {product.name}</h1>
-              <div className=" pt-1 pb-3">ออเดอร์: {product.order}</div>
+              <h1 className="bg-info p-3">ออเดอร์: {product.order}</h1>
               <div className=" pt-1 pb-3">
-                รายละเอียด: {product.description}
+                <u>ชื่อลูกค้า</u>: {product.customer}
               </div>
-              <div className=" pt-1 pb-3">สถานที่: {product.place}</div>
+              <div className=" pt-1 pb-3">
+                <u>สถานที่</u>: {product.place}
+              </div>
+              <div className=" pt-1 pb-3">
+                <u>ทีมช่าง</u>: {product.team}
+              </div>
+              <div className=" pt-1 pb-3">
+                <u>เจาะก๊อก/ท่อร้อยสายไฟ</u>: {product.glock}
+              </div>
+              <div className=" pt-1 pb-3">
+                <u>เตา</u>: {product.stove}
+              </div>
+              <div className=" pt-1 pb-3">
+                <u>อ่าง</u>: {product.sink}
+              </div>
+              <div className=" pt-1 pb-3">
+                <u>เซาะร่องน้ำ</u>: {product.water}
+              </div>
+              <div className=" pt-1 pb-3">
+                <u>บัวกันเปื้อน</u>: {product.lotus}{" "}
+                {product.lotus === "มี" ? `| ${product.lotusStyle}` : ""}{" "}
+                {product.lotus === "มี" ? `| ${product.lotusHeight} เมตร` : ""}
+              </div>
+              <div className=" pt-1 pb-3">
+                <u>จมูกท็อป</u>: {product.noseTop}
+              </div>
+              <div className=" pt-1 pb-3">
+                <u>ยื่นจากเคาน์เตอร์</u>: {product.counter}
+              </div>
             </div>
           </div>
         </div>

@@ -2,7 +2,17 @@ import React, { useState, useEffect, Fragment, useRef } from "react";
 import axios from "axios";
 import { addLaser, getProducts } from "./admin/apiAdmin";
 import BluePrint from "./laser/BluePrint";
-import { Stage, Layer, Line, Rect, Text, Tag, Label, Image } from "react-konva";
+import {
+  Stage,
+  Layer,
+  Line,
+  Text,
+  Tag,
+  Label,
+  Image,
+  Circle,
+} from "react-konva";
+import Swal from "sweetalert2";
 import useImage from "use-image";
 import Menu from "./core/Menu";
 import { API } from "./config";
@@ -17,6 +27,7 @@ const PointsLaser = ({ history }) => {
   const [lines, setLines] = useState([]);
   const [top] = useState(10);
   const [products, setProducts] = useState([]);
+  const [getProduct, setGetProducts] = useState([]);
   const [points, setPoints] = useState([]);
   const [curves, setCurves] = useState([]);
   const [order, setOrder] = useState("");
@@ -28,6 +39,7 @@ const PointsLaser = ({ history }) => {
   const [isFinished] = useState(true);
   const [check, setCheck] = useState(false);
   const [lotusTop, setLotusTop] = useState([]);
+  const [error, setError] = useState(null);
 
   const [image] = useImage(
     require("./img/shape_triangle-removebg-preview.png")
@@ -39,43 +51,67 @@ const PointsLaser = ({ history }) => {
   var anglePoint;
 
   useEffect(() => {
+    if (!window.localStorage.getItem("productId")) {
+      return history.push("/productNumber");
+    }
+    let productId = window.localStorage.getItem("productId");
     loadProducts();
 
     let line = [];
     let x99;
     let y99;
-    setInterval(() => {
-      axios.get(`${API}/laser`).then((response, i) => {
-        line = [];
-        response.data.point.map((p) => {
-          // console.log(p);
-          x99 =
-            (p[0] + 0.029475) *
-            Math.cos(p[1] * (Math.PI / 180)) *
-            150 *
-            6.52746569;
-          y99 =
-            (p[0] + 0.029475) *
-            Math.sin(p[1] * (Math.PI / 180)) *
-            150 *
-            6.52746569;
-          // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
-          // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
-          // console.log(x99);
-          line.push([x99, y99]);
-          // console.log(line)
-        });
+    let pointFunc = setInterval(() => {
+      axios.get(`${API}/laser/${productId}`).then((response) => {
+        if (response.data === null) {
+          toast.error("Product number is not found", {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          });
+          window.localStorage.removeItem("productId");
+          productId = "";
+          history.push("/productNumber");
+          clearInterval(pointFunc);
+        } else {
+          line = [];
+          response.data.point.map((p) => {
+            // console.log(p);
+            x99 =
+              (p[0] + 0.029475) *
+              Math.cos(p[1] * (Math.PI / 180)) *
+              150 *
+              6.52746569;
+            y99 =
+              (p[0] + 0.029475) *
+              Math.sin(p[1] * (Math.PI / 180)) *
+              150 *
+              6.52746569;
+            // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
+            // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
+            // console.log(x99);
+            line.push([x99, y99]);
+            // console.log(line)
+          });
+          setPoints(line);
+
+          if (window.location.pathname !== "/laser") clearInterval(pointFunc);
+        }
+
+        setError(null);
+
         // response.data.point.map(p => console.log(p[0]))
       });
-
-      setPoints(line);
-    }, 1000);
-  }, []);
+    }, 3000);
+  }, [order, setOrder]);
 
   useEffect(() => {
     var curvePoint = [];
     let xCurve, yCurve;
-    setInterval(() => {
+    let curveFunc = setInterval(() => {
       axios.get(`${API}/curve`).then((response, i) => {
         curvePoint = [];
         response.data.curve.map((p) => {
@@ -99,8 +135,9 @@ const PointsLaser = ({ history }) => {
         });
 
         setCurves(curvePoint);
+        if (window.location.pathname !== "/laser") clearInterval(curveFunc);
       });
-    }, 1000);
+    }, 10000);
   }, []);
 
   // Point
@@ -315,10 +352,12 @@ const PointsLaser = ({ history }) => {
 
   const loadProducts = () => {
     getProducts().then((data) => {
+      // console.log(data);
       if (data.error) {
-        console.log(data.error);
+        // console.log(data.error);
       } else {
         setProducts(data);
+        setGetProducts(products.filter((p) => p.order === order));
       }
     });
   };
@@ -413,9 +452,10 @@ const PointsLaser = ({ history }) => {
 
     //console.log(lpoint[lpoint.length - 1].direction);
 
-    return lpoint.map((point) => {
+    return lpoint.map((point, i) => {
       return (
         <Label
+          key={i}
           x={point.x}
           y={point.y}
           rotation={
@@ -453,19 +493,38 @@ const PointsLaser = ({ history }) => {
 
   const handleExport = () => {
     let username = user.name;
-    // console.log(order);
-    addLaser({
-      order,
-      point: points,
-      curves,
-      lines: { tool, points: lines },
-    }).then(() => toast.success("Save data to database"));
+    console.log(getProduct);
+
+    Swal.fire({
+      title: "ตรวจสอบข้อมูลก่อนบันทึก",
+      html: `<div>เลขงานที่: ${order}</div> <div>ชื่อลูกค้า: ${getProduct[0].customer}</div> <div>สถานที่: ${getProduct[0].place}</div>`,
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      cancelButtonText: "ย้อนกลับ",
+      confirmButtonText: "ข้อมูลถูกต้อง",
+    }).then((result) => {
+      if (result.value) {
+        // console.log(getProduct);
+        addLaser({
+          order,
+          point: points,
+          curves,
+          lines: { tool, points: lines },
+        }).then(() => {
+          Swal.fire("สำเร็จ", "บันทึกข้อมูลสำเร็จ", "success");
+          history.push("/");
+        });
+      }
+    });
   };
 
   return (
     <>
       <Fragment>
         <Menu />
+
         <Affix offsetTop={top}>
           <Button
             type="primary"
@@ -523,6 +582,18 @@ const PointsLaser = ({ history }) => {
             <span className="p-2">Open Dxf: </span>
           )}
           <Checkbox onChange={(e) => setCheck(e.target.checked)} />
+
+          <Button
+            type="primary"
+            danger
+            onClick={() => {
+              window.localStorage.removeItem("productId");
+              history.push("/productNumber");
+            }}
+            style={{ display: "absolute", left: "30px" }}
+          >
+            Edit product
+          </Button>
         </Affix>
         {check ? (
           <BluePrint
@@ -621,12 +692,12 @@ const PointsLaser = ({ history }) => {
                         }
                       : null;
                   return (
-                    <Rect
+                    <Circle
                       key={index}
                       x={x}
                       y={y}
-                      offsetY={4}
-                      offsetX={-2}
+                      offsetY={0}
+                      offsetX={-8}
                       width={width / 1.2}
                       height={width / 1.2}
                       fill="white"

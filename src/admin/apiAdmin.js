@@ -266,3 +266,17 @@ export const getUser = (userId) => {
 export const updateUser = (userId, user) => {
   axios.put(`${API}/user/${userId}`, user);
 };
+
+export const getMeasure = () => {
+  return axios.get(`${API}/laser`);
+};
+
+export const addMeasure = (measurement) => {
+  return axios.post(`${API}/laser`, {
+    measurement,
+  });
+};
+
+export const delMeasure = (measureId) => {
+  return axios.delete(`${API}/laser/${measureId}`);
+};

@@ -1,0 +1,76 @@
+.page {
+    width: 100vw;
+    height: 94.5vh;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(150deg, #ff9999, #bbff99);
+    overflow: hidden;
+}
+
+.page .cardProduct {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 55%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 300px;
+    width: 300px;
+    background-color: white;
+    border-radius: 10px;
+    justify-content: space-around;
+    align-items: center;
+    background: #ffffe6;
+    border-radius: 15px;
+    box-shadow: 10px 10px 5px 5px rgba(138, 136, 136, 0.7);
+}
+
+.cardProduct h2 {
+    color: coral;
+}
+
+.page .cardProduct .underline {
+    width: 100%;
+    border: 1px solid black;
+}
+
+.page .cardProduct .inputName {
+    display: flex;
+    flex-direction: column;
+}
+
+.page .cardProduct .inputName input {
+    width: 100%;
+    padding: 5px 15px;
+    border: none;
+    background-color: transparent;
+    border-bottom: 2px solid #adadad;
+    outline: none;
+    transition: all ease-out 0.5s;
+    font-size: 16px;
+}
+
+.page .cardProduct .inputName input:focus {
+    border-bottom: 2px solid coral;
+}
+
+.page .cardProduct .inputName .textField {
+    position: relative;
+    font-size: 20px;
+    color: #4e4a4a;
+}
+
+.page .cardProduct button {
+    background-color: bisque;
+    width: 80%;
+    border: none;
+    padding: 10px;
+    border-radius: 15px;
+    outline: none;
+    transition: all ease 1s;
+}
+
+.page .cardProduct button:hover {
+    background-color: #4e4a4a;
+    color: white;
+}

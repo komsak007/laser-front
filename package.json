@@ -26,6 +26,7 @@
     "react-scripts": "3.4.4",
     "react-toastify": "^6.2.0",
     "save-as": "^0.1.8",
+    "sweetalert2": "^11.1.4",
     "use-image": "^1.0.8"
   },
   "scripts": {
