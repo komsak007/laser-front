@@ -97,8 +97,6 @@ const PointsLaser = ({ history }) => {
             // console.log(line)
           });
           setPoints(line);
-
-          if (window.location.pathname !== "/laser") clearInterval(pointFunc);
         }
 
         setError(null);
@@ -106,6 +104,7 @@ const PointsLaser = ({ history }) => {
         // response.data.point.map(p => console.log(p[0]))
       });
     }, 3000);
+    return () => clearInterval(pointFunc);
   }, [order, setOrder]);
 
   useEffect(() => {
@@ -135,9 +134,9 @@ const PointsLaser = ({ history }) => {
         });
 
         setCurves(curvePoint);
-        if (window.location.pathname !== "/laser") clearInterval(curveFunc);
       });
-    }, 10000);
+    }, 3000);
+    return () => clearInterval(curveFunc);
   }, []);
 
   // Point
@@ -415,17 +414,16 @@ const PointsLaser = ({ history }) => {
     let lpoint = [];
 
     for (let i = 0; i < points.length - 1; i++) {
-      let dx = points[i + 1][0] - points[i][0];
-      let dy = points[i + 1][1] - points[i][1];
-      let x = points[i][0] + dx / 2;
-      let y = points[i][1] + dy / 2;
+      let dx = points[i + 1][0] / 150 - points[i][0] / 150;
+      let dy = points[i + 1][1] / 150 - points[i][1] / 150;
+      let x = points[i][0] + (dx * 150) / 2;
+      let y = points[i][1] + (dy * 150) / 2;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.0200251898;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.020022205; // ดีที่สุด
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.018014184;
       // let l =
       //   Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006570005 * calPoint;
-      let l =
-        Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * 0.006517005 * calPoint;
+      let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2)) * calPoint;
       // let l = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
       let angle = Math.atan(Math.abs(dy) / Math.abs(dx));
 
