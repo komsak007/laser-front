@@ -84,12 +84,12 @@ const PointsLaser = ({ history }) => {
               (p[0] + 0.029475) *
               Math.cos(p[1] * (Math.PI / 180)) *
               150 *
-              6.52746569;
+              6.67456569;
             y99 =
               (p[0] + 0.029475) *
               Math.sin(p[1] * (Math.PI / 180)) *
               150 *
-              6.52746569;
+              6.67456569;
             // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
             // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
             // console.log(x99);
@@ -439,10 +439,10 @@ const PointsLaser = ({ history }) => {
         (angle >= 0 && angle <= Math.PI / 4) ||
         angle >= 2 * Math.PI - Math.PI / 4
       )
-        direction = "down";
-      else if (angle < (3 * Math.PI) / 4) direction = "right";
-      else if (angle < (5 * Math.PI) / 4) direction = "up";
-      else if (angle < (7 * Math.PI) / 4) direction = "left";
+        direction = "left";
+      else if (angle < (3 * Math.PI) / 4) direction = "down";
+      else if (angle < (5 * Math.PI) / 4) direction = "right";
+      else if (angle < (7 * Math.PI) / 4) direction = "up";
       else;
 
       lpoint = [...lpoint, { x, y, l, angle, direction }];
@@ -464,8 +464,8 @@ const PointsLaser = ({ history }) => {
                   pointFinal[1][0] - pointFinal[0][0]
                 ) + 137
           }
-          // offsetX={10}
-          // offsetY={10}
+          offsetX={10}
+          offsetY={10}
         >
           <Tag
             fill="black"
@@ -473,15 +473,18 @@ const PointsLaser = ({ history }) => {
             pointerWidth={8}
             pointerHeight={8}
             lineJoin="round"
+            offsetX={-6}
+            offsetY={-10}
             shadowColor="black"
           />
           <Text
-            text={point.l.toFixed(3) + " m "}
+            text={point.l.toFixed(3)}
             fontFamily="Calibri"
             fontSize={10}
             padding={4}
             scaleY={-1}
-            offsetY={17}
+            offsetY={27}
+            offsetX={-6}
             fill="white"
           />
         </Label>
@@ -612,7 +615,7 @@ const PointsLaser = ({ history }) => {
               width={window.innerWidth}
               height={window.innerHeight}
               offsetX={-window.innerWidth / 2}
-              offsetY={-(window.innerHeight - 200) / 2}
+              offsetY={-window.innerHeight / 2}
               scaleX={stageScale}
               scaleY={stageScale}
               x={stageX}
