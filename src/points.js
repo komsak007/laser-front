@@ -119,12 +119,12 @@ const PointsLaser = ({ history }) => {
             (p[0] + 0.029475) *
             Math.cos(p[1] * (Math.PI / 180)) *
             150 *
-            6.52746569;
+            6.67456569;
           yCurve =
             (p[0] + 0.029475) *
             Math.sin(p[1] * (Math.PI / 180)) *
             150 *
-            6.52746569;
+            6.67456569;
 
           // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
           // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
@@ -150,8 +150,8 @@ const PointsLaser = ({ history }) => {
   let overPoint = [];
   let calPoint = 1;
   points.map((p) => {
-    xFinal = p[0] / 6.52746569;
-    yFinal = p[1] / 6.52746569;
+    xFinal = p[0] / 6.67456569;
+    yFinal = p[1] / 6.67456569;
     pointFinal.push([xFinal, yFinal]);
     // console.log(pointFinal);
   });
@@ -263,8 +263,8 @@ const PointsLaser = ({ history }) => {
   var calCurve = 1;
 
   curves.map((p) => {
-    xCurveFinal = p[0] / 6.52746569;
-    yCurveFinal = p[1] / 6.52746569;
+    xCurveFinal = p[0] / 6.67456569;
+    yCurveFinal = p[1] / 6.67456569;
     curveFinal.push([xCurveFinal, yCurveFinal]);
   });
 

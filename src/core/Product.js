@@ -1,7 +1,16 @@
 import React, { useState, useEffect, Fragment, useRef } from "react";
 import { read } from "./apiCore";
 import BluePrint from "../laser/BluePrint";
-import { Stage, Layer, Line, Rect, Text, Tag, Label } from "react-konva";
+import {
+  Stage,
+  Layer,
+  Line,
+  Rect,
+  Text,
+  Tag,
+  Label,
+  Circle,
+} from "react-konva";
 import Menu from "../core/Menu";
 import PolyLine from "../laser/PolyLine";
 import makerjs from "makerjs";
@@ -54,8 +63,8 @@ const Product = ({ match }) => {
   let overPoint = [];
   let calPoint = 1;
   points.map((p) => {
-    xFinal = p[0] / 6.52746569;
-    yFinal = p[1] / 6.52746569;
+    xFinal = p[0] / 6.67456569;
+    yFinal = p[1] / 6.67456569;
     pointFinal.push([xFinal, yFinal]);
     // console.log(pointFinal);
   });
@@ -167,8 +176,8 @@ const Product = ({ match }) => {
   let calCurve = 1;
 
   curves.map((p) => {
-    xCurveFinal = p[0] / 6.52746569;
-    yCurveFinal = p[1] / 6.52746569;
+    xCurveFinal = p[0] / 6.67456569;
+    yCurveFinal = p[1] / 6.67456569;
     curveFinal.push([xCurveFinal, yCurveFinal]);
   });
 
@@ -316,10 +325,10 @@ const Product = ({ match }) => {
         (angle >= 0 && angle <= Math.PI / 4) ||
         angle >= 2 * Math.PI - Math.PI / 4
       )
-        direction = "down";
-      else if (angle < (3 * Math.PI) / 4) direction = "right";
-      else if (angle < (5 * Math.PI) / 4) direction = "up";
-      else if (angle < (7 * Math.PI) / 4) direction = "left";
+        direction = "left";
+      else if (angle < (3 * Math.PI) / 4) direction = "down";
+      else if (angle < (5 * Math.PI) / 4) direction = "right";
+      else if (angle < (7 * Math.PI) / 4) direction = "up";
       else;
 
       lpoint = [...lpoint, { x, y, l, angle, direction }];
@@ -329,22 +338,39 @@ const Product = ({ match }) => {
 
     return lpoint.map((point, i) => {
       return (
-        <Label key={i} x={point.x} y={point.y} rotation={anglePoint}>
+        <Label
+          key={i}
+          x={point.x}
+          y={point.y}
+          rotation={
+            calPoint === 1
+              ? anglePoint
+              : Math.atan2(
+                  pointFinal[1][1] - pointFinal[0][1],
+                  pointFinal[1][0] - pointFinal[0][0]
+                ) + 137
+          }
+          offsetX={10}
+          offsetY={10}
+        >
           <Tag
             fill="black"
             pointerDirection={point.direction}
             pointerWidth={8}
             pointerHeight={8}
             lineJoin="round"
+            offsetX={-10}
+            offsetY={-10}
             shadowColor="black"
           />
           <Text
-            text={point.l.toFixed(3) + " m "}
+            text={point.l.toFixed(3)}
             fontFamily="Calibri"
             fontSize={10}
             padding={4}
             scaleY={-1}
-            offsetY={17}
+            offsetY={27}
+            offsetX={-10}
             fill="white"
           />
         </Label>
@@ -547,7 +573,7 @@ const Product = ({ match }) => {
           width={window.innerWidth}
           height={window.innerHeight}
           offsetX={-window.innerWidth / 2}
-          offsetY={-(window.innerHeight - 200) / 2}
+          offsetY={-window.innerHeight / 2}
           scaleX={stageScale}
           scaleY={stageScale}
           x={stageX}
@@ -557,8 +583,8 @@ const Product = ({ match }) => {
           <Layer>
             {lines.map((line, i) => (
               <Line
-                x={-(window.innerWidth - 250) / 2}
-                y={-(window.innerHeight - 250) / 2}
+                x={-window.innerWidth / 2}
+                y={-(window.innerHeight - 200) / 2}
                 key={i}
                 points={line.points}
                 stroke="#df4b26"
@@ -597,14 +623,17 @@ const Product = ({ match }) => {
                     }
                   : null;
               return (
-                <Rect
+                <Circle
                   key={index}
                   x={x}
                   y={y}
+                  offsetY={0}
+                  offsetX={-8}
                   width={width / 1.2}
                   height={width / 1.2}
                   fill="white"
                   stroke="black"
+                  rotation={50}
                   strokeWidth={2}
                   {...startPointAttr}
                 />
