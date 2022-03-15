@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { Redirect } from "react-router-dom";
+import { toast } from "react-toastify";
 
 import {
   getProduct,
@@ -137,20 +138,20 @@ const UpdateProduct = ({ match, history }) => {
     setValues({ ...values, error: "", createdProduct: "", [name]: value });
   };
 
-  const clickSubmit = (event) => {
+  const clickSubmit = async (event) => {
     event.preventDefault();
     // console.log(images);
     setValues({ ...values, error: "", loading: true });
     // for (let i = 0; i < images.length; i++) {
     //   formData.append("images", images[i]);
     // }
-    updateImages(match.params.productId, user._id, token, images).then(
+    await updateImages(match.params.productId, user._id, token, images).then(
       (res) => {
         console.log(res);
       }
     );
 
-    updateProduct(match.params.productId, user._id, token, values).then(
+    await updateProduct(match.params.productId, user._id, token, values).then(
       (data) => {
         console.log(data);
         if (data.error) {
@@ -168,7 +169,18 @@ const UpdateProduct = ({ match, history }) => {
         }
       }
     );
-    window.scrollTo(0, 0);
+    toast(`Order number '${order}' is Updated!`, {
+      position: "top-right",
+      autoClose: 2000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      onClose: () => {
+        history.push("/");
+      },
+    });
   };
 
   const newPostForm = () => (

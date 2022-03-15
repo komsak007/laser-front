@@ -16,7 +16,7 @@ import PolyLine from "../laser/PolyLine";
 import makerjs from "makerjs";
 import { toast } from "react-toastify";
 import { DownloadOutlined } from "@ant-design/icons";
-import { Affix, Checkbox, Button, Card, Tabs } from "antd";
+import { Affix, Checkbox, Button, Card, Image } from "antd";
 import { Carousel } from "react-responsive-carousel";
 import { isAuthenticated } from "../auth";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
@@ -43,6 +43,7 @@ const Product = ({ match }) => {
   const [isFinished] = useState(true);
   const [checkDxf, setCheckDxf] = useState(false);
   const [checkProduct, setCheckProduct] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   const { images } = product;
 
@@ -50,7 +51,6 @@ const Product = ({ match }) => {
 
   useEffect(() => {
     loadProduct();
-    console.log(pointFinal);
   }, []);
 
   let xFinal, yFinal;
@@ -63,8 +63,8 @@ const Product = ({ match }) => {
   let overPoint = [];
   let calPoint = 1;
   points.map((p) => {
-    xFinal = p[0] / 6.67456569;
-    yFinal = p[1] / 6.67456569;
+    xFinal = p[0] * 153.5
+    yFinal = p[1] * 153.5
     pointFinal.push([xFinal, yFinal]);
     // console.log(pointFinal);
   });
@@ -176,8 +176,8 @@ const Product = ({ match }) => {
   let calCurve = 1;
 
   curves.map((p) => {
-    xCurveFinal = p[0] / 6.67456569;
-    yCurveFinal = p[1] / 6.67456569;
+    xCurveFinal = p[0] / 6.52456569;
+    yCurveFinal = p[1] / 6.52456569;
     curveFinal.push([xCurveFinal, yCurveFinal]);
   });
 
@@ -325,10 +325,10 @@ const Product = ({ match }) => {
         (angle >= 0 && angle <= Math.PI / 4) ||
         angle >= 2 * Math.PI - Math.PI / 4
       )
-        direction = "left";
-      else if (angle < (3 * Math.PI) / 4) direction = "down";
-      else if (angle < (5 * Math.PI) / 4) direction = "right";
-      else if (angle < (7 * Math.PI) / 4) direction = "up";
+        direction = "down";
+      else if (angle < (3 * Math.PI) / 4) direction = "right";
+      else if (angle < (5 * Math.PI) / 4) direction = "up";
+      else if (angle < (7 * Math.PI) / 4) direction = "left";
       else;
 
       lpoint = [...lpoint, { x, y, l, angle, direction }];
@@ -359,9 +359,10 @@ const Product = ({ match }) => {
             pointerWidth={8}
             pointerHeight={8}
             lineJoin="round"
-            offsetX={-10}
+            offsetX={-6}
             offsetY={-10}
             shadowColor="black"
+            cornerRadius={20}
           />
           <Text
             text={point.l.toFixed(3)}
@@ -370,7 +371,7 @@ const Product = ({ match }) => {
             padding={4}
             scaleY={-1}
             offsetY={27}
-            offsetX={-10}
+            offsetX={-6}
             fill="white"
           />
         </Label>
@@ -445,11 +446,13 @@ const Product = ({ match }) => {
     });
   };
 
+  console.log("image: " + images);
+
   return (
     <Fragment>
       <Menu />
       <div>
-        <Checkbox onChange={(e) => setCheckProduct(e.target.checked)}>
+        <Checkbox disabled={images !== "" ? false : true} onChange={(e) => setCheckProduct(e.target.checked)}>
           View Image
         </Checkbox>
       </div>
@@ -466,7 +469,33 @@ const Product = ({ match }) => {
         <div className="container-fluid">
           <div className="row pt-4">
             <div className="col-md-9">
-              {images && images.length ? (
+              <div class="d-flex flex-column bd-highlight mb-3">
+                <div class="d-flex justify-content-center">
+                  <Image
+                    preview={{ visible: false }}
+                    width="75%"
+                    height={500}
+                    src={images[0].url}
+                    onClick={() => setVisible(true)}
+                    // style={{ margin: "auto", width: 500, height: 300 }}
+                    className="mx-auto"
+                  />
+                </div>
+              </div>
+              <div style={{ display: "none" }}>
+                <Image.PreviewGroup
+                  preview={{
+                    visible,
+                    onVisibleChange: (vis) => setVisible(vis),
+                  }}
+                >
+                  {images.map((image) => (
+                    <Image src={image.url} />
+                  ))}
+                </Image.PreviewGroup>
+              </div>
+
+              {/* {images && images.length ? (
                 <Carousel showArrows={true} autoPlay infiniteLoop>
                   {images &&
                     images.map((i) => (
@@ -487,11 +516,16 @@ const Product = ({ match }) => {
                     />
                   }
                 ></Card>
-              )}
+              )} */}
             </div>
 
-            <div className="col-md-3">
-              <h1 className="bg-info p-3">ออเดอร์: {product.order}</h1>
+            <div className="col-md-3" style={{ backgroundColor: "#f5f5f0" }}>
+              <h1
+                className="p-3"
+                style={{ backgroundColor: "#ebebe0", width: "100%" }}
+              >
+                ออเดอร์: {product.order}
+              </h1>
               <div className=" pt-1 pb-3">
                 <u>ชื่อลูกค้า</u>: {product.customer}
               </div>
@@ -602,7 +636,14 @@ const Product = ({ match }) => {
             width={window.innerWidth}
             height={window.innerHeight}
             scaleY={-1}
-            rotation={anglePoint}
+            rotation={
+              calPoint === 1
+                ? anglePoint
+                : Math.atan2(
+                    pointFinal[1][1] - pointFinal[0][1],
+                    pointFinal[1][0] - pointFinal[0][0]
+                  ) + 137
+            }
           >
             {pointFinal.length >= 2 && textLabel(pointFinal)}
 

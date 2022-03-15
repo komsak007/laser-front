@@ -42,6 +42,7 @@ const AddProduct = ({ history }) => {
     order,
     description,
     place,
+    dayjob,
     images,
     glock,
     stove,
@@ -150,9 +151,9 @@ const AddProduct = ({ history }) => {
             <label className="text-muted">วันที่ทำเอกสาร</label>
             <input
               onChange={handleChange("dayjob")}
-              type="text"
+              type="date"
               className="form-control"
-              value={name}
+              value={dayjob}
             />
           </div>
         </div>
@@ -172,7 +173,8 @@ const AddProduct = ({ history }) => {
             <label className="text-muted">วันที่นัดหมาย</label>
             <input
               onChange={handleChange("Appointment")}
-              type="text"
+              min={dayjob}
+              type="date"
               className="form-control"
               value={name}
             />

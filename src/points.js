@@ -80,16 +80,8 @@ const PointsLaser = ({ history }) => {
           line = [];
           response.data.point.map((p) => {
             // console.log(p);
-            x99 =
-              (p[0] + 0.029475) *
-              Math.cos(p[1] * (Math.PI / 180)) *
-              150 *
-              6.67456569;
-            y99 =
-              (p[0] + 0.029475) *
-              Math.sin(p[1] * (Math.PI / 180)) *
-              150 *
-              6.67456569;
+            x99 = p[0] * Math.cos(p[1] * (Math.PI / 180));
+            y99 = p[0] * Math.sin(p[1] * (Math.PI / 180));
             // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
             // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
             // console.log(x99);
@@ -113,25 +105,27 @@ const PointsLaser = ({ history }) => {
     let curveFunc = setInterval(() => {
       axios.get(`${API}/curve`).then((response, i) => {
         curvePoint = [];
-        response.data.curve.map((p) => {
-          // console.log(p);
-          xCurve =
-            (p[0] + 0.029475) *
-            Math.cos(p[1] * (Math.PI / 180)) *
-            150 *
-            6.67456569;
-          yCurve =
-            (p[0] + 0.029475) *
-            Math.sin(p[1] * (Math.PI / 180)) *
-            150 *
-            6.67456569;
+        if (response.data) {
+          response.data.curve.map((p) => {
+            // console.log(p);
+            xCurve =
+              (p[0] + 0.029475) *
+              Math.cos(p[1] * (Math.PI / 180)) *
+              150 *
+              6.67456569;
+            yCurve =
+              (p[0] + 0.029475) *
+              Math.sin(p[1] * (Math.PI / 180)) *
+              150 *
+              6.67456569;
 
-          // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
-          // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
-          // console.log(x99);
-          curvePoint.push([xCurve, yCurve]);
-          // console.log(line)
-        });
+            // x99 = (p[0] + 0.038) * Math.cos(p[1] * (Math.PI / 180));
+            // y99 = (p[0] + 0.038) * Math.sin(p[1] * (Math.PI / 180));
+            // console.log(x99);
+            curvePoint.push([xCurve, yCurve]);
+            // console.log(line)
+          });
+        }
 
         setCurves(curvePoint);
       });
@@ -150,8 +144,8 @@ const PointsLaser = ({ history }) => {
   let overPoint = [];
   let calPoint = 1;
   points.map((p) => {
-    xFinal = p[0] / 6.67456569;
-    yFinal = p[1] / 6.67456569;
+    xFinal = p[0] * 150
+    yFinal = p[1] * 150
     pointFinal.push([xFinal, yFinal]);
     // console.log(pointFinal);
   });
@@ -439,10 +433,10 @@ const PointsLaser = ({ history }) => {
         (angle >= 0 && angle <= Math.PI / 4) ||
         angle >= 2 * Math.PI - Math.PI / 4
       )
-        direction = "left";
-      else if (angle < (3 * Math.PI) / 4) direction = "down";
-      else if (angle < (5 * Math.PI) / 4) direction = "right";
-      else if (angle < (7 * Math.PI) / 4) direction = "up";
+        direction = "down";
+      else if (angle < (3 * Math.PI) / 4) direction = "right";
+      else if (angle < (5 * Math.PI) / 4) direction = "up";
+      else if (angle < (7 * Math.PI) / 4) direction = "left";
       else;
 
       lpoint = [...lpoint, { x, y, l, angle, direction }];
@@ -476,6 +470,7 @@ const PointsLaser = ({ history }) => {
             offsetX={-6}
             offsetY={-10}
             shadowColor="black"
+            cornerRadius={20}
           />
           <Text
             text={point.l.toFixed(3)}
@@ -515,7 +510,7 @@ const PointsLaser = ({ history }) => {
           lines: { tool, points: lines },
         }).then(() => {
           Swal.fire("สำเร็จ", "บันทึกข้อมูลสำเร็จ", "success");
-          history.push("/");
+          history.push(`/admin/product/update/${getProduct[0]._id}`);
         });
       }
     });

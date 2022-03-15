@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { Divider } from "antd";
+
 import Layout from "./Layout";
 import Card from "./Card";
 import { getCategories, getFilteredProducts } from "./apiCore";
@@ -99,9 +101,10 @@ const Home = ({ history }) => {
         <div className="col-8">
           <div className="row">
             <div className="col-10">
-              <h2>Products</h2>
-            </div>
-            <div className="col-2 mt-4">
+              <Divider orientation="left">
+                <h2>Products</h2>
+              </Divider>
+
               <span
                 onClick={() => history.push(`/create/product`)}
                 className=" badge-lg badge-primary badge-pill"
